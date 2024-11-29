@@ -1,0 +1,22 @@
+{
+    "name": "monprojet/spectacleparisiens",
+    "description": "Le projet consiste à reproduire une partie d'un annuaire des spectacles parisiens.",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^7.9",
+        "phpunit/phpunit": "^9.6"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Config\\": "src/Config/"
+        }
+    },
+    "authors": [
+        {
+            "name": "daniel komoe",
+            "email": "daniel.komoe@epitech.eu"
+        }
+    ],
+    "minimum-stability": "stable"
+}
