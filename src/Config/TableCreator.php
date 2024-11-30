@@ -25,7 +25,7 @@ class TableCreator
                 presentation TEXT,
                 address TEXT,
                 borough INT(11),
-                geolocation POINT,
+                geolocation POINT NOT NULL,
                 phone VARCHAR(20),
                 email VARCHAR(128)
             );
@@ -102,10 +102,10 @@ class TableCreator
             ";
 
             $conn->exec($sql);
-            echo "Tables created successfully.";
+            echo "Tables created successfully.\n";
 
         } catch (PDOException $e) {
-            echo "Error creating tables: " . $e->getMessage();
+            echo "Error creating tables: " . $e->getMessage() . "\n";
         } finally {
             $conn = null;
         }
