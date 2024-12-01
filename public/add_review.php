@@ -9,9 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $commentaire = trim($_POST['commentaire']); // Le commentaire de l'utilisateur
     $note = (int) $_POST['NOTE']; // Note attribuée (1 à 5)
 
-    // Validation des données
     if (empty($commentaire) || $note < 1 || $note > 5) {
-        echo "Veuillez entrer un commentaire valide et une note comprise entre 1 et 5.";
+        echo "Veuillez entrer un commentaire et une note comprise entre 1 et 5.";
         exit;
     }
 
@@ -21,7 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $conn->prepare($sql);
         $stmt->execute([$user_id, $spectacle_id, $commentaire, $note]);
 
-        // Confirmation
         echo "Merci pour votre avis ! Votre commentaire a bien été enregistré.";
     } catch (Exception $e) {
         // Gestion des erreurs
