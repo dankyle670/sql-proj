@@ -5,6 +5,7 @@ require_once '../vendor/autoload.php';
 use Config\Database;
 use Config\TableCreator;
 use Config\FillDatabase;
+use Controllers\UserController;
 
 echo "<h1>Application Initialization</h1>";
 
@@ -38,46 +39,70 @@ if (class_exists(TableCreator::class)) {
     echo "<p>TableCreator class not found!</p>";
 }
 
-// Route Handling
-echo "<h2>Handling Routes</h2>";
+// Test UserController
+if (class_exists(UserController::class)) {
+    echo "<h2>Testing UserController</h2>";
 
-// Check for route in the query parameter
-//$route = $_GET['route'] ?? 'home';
-//
-//switch ($route) {
-//    case 'home':
-//        require_once 'home.php'; // Adjust path if necessary
-//        break;
-//
-//    case 'spectacle':
-//        require_once 'spectacle_details.php'; // Display a spectacle's details
-//        break;
-//
-//    case 'profile':
-//        require_once 'profile.php'; // User profile management
-//        break;
-//
-//    case 'reservation':
-//        require_once 'reservation.php'; // Reservation page
-//        break;
-//
-//    case 'add_review':
-//        require_once 'add_review.php'; // Add review functionality
-//        break;
-//
-//    case 'fill_database':
-//        if (class_exists(FillDatabase::class)) {
-//            FillDatabase::fillTables();
-//            echo "<p>Database filled with fake data.</p>";
-//        } else {
-//            echo "<p>FillDatabase class not found!</p>";
-//        }
-//        break;
-//
-//    default:
-//        echo "<h3>404 - Page not found</h3>";
-//        break;
-//}
-//
+    $userController = new UserController();
+
+    // Test Registration
+    echo "<h3>Registering User</h3>";
+    $registrationResult = $userController->register([
+        'first_name' => 'John',
+        'last_name' => 'Doe',
+        'username' => 'TestUser',
+        'email' => 'testuser@example.com',
+        'password' => 'securepassword',
+        'birthdate' => '1990-01-01'
+    ]);
+    echo $registrationResult['message'] . "<br>";
+
+    // Test Login
+    echo "<h3>Logging in User</h3>";
+    $loginResult = $userController->login([
+        'email' => 'testuser@example.com',
+        'password' => 'securepassword',
+    ]);
+    echo $loginResult['message'] . "<br>";
+
+    // Test Fetching User Profile
+    if ($loginResult['success']) {
+        session_start();
+        $userId = $_SESSION['user_id']; // Assuming session stores the user ID
+
+        echo "<h3>Fetching User Profile</h3>";
+        $profileResult = $userController->getProfile($userId);
+        if ($profileResult['success']) {
+            echo "User Profile:<br>";
+            echo "<pre>" . print_r($profileResult['data'], true) . "</pre>";
+        } else {
+            echo $profileResult['message'] . "<br>";
+        }
+    } else {
+        echo "Skipping profile fetch test due to login failure.<br>";
+    }
+
+    // Test Updating User Profile
+    echo "<h3>Updating User Profile</h3>";
+    $updateResult = $userController->updateProfile(1, [
+        'first_name' => 'Jane',
+        'last_name' => 'Smith',
+        'username' => 'UpdatedTestUser',
+        'password' => 'newsecurepassword',
+        'birthdate' => '1995-05-15'
+    ]);
+    echo $updateResult['message'] . "<br>";
+
+    // Test Logout
+    echo "<h3>Logging out User</h3>";
+    $logoutResult = $userController->logout();
+    echo $logoutResult['message'] . "<br>";
+} else {
+    echo "<p>UserController class not found!</p>";
+}
+
+
+// Route Handling
+
 echo "<h2>Setup Complete</h2>";
 ?>

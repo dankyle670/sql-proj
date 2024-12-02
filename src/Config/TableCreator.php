@@ -91,13 +91,22 @@ class TableCreator
                 booked TINYINT(3) UNSIGNED,
                 paid TINYINT(1),
                 amount FLOAT,
-                comment TEXT,
-                notation SMALLINT(5) UNSIGNED,
                 spectacle_id INT(11),
                 subscriber_id INT(11),
                 reactions JSON,
                 FOREIGN KEY (spectacle_id) REFERENCES spectacles_spectacle(id),
                 FOREIGN KEY (subscriber_id) REFERENCES spectacles_subscriber(id)
+            );
+
+            CREATE TABLE IF NOT EXISTS reviews (
+                id INT(11) AUTO_INCREMENT PRIMARY KEY,
+                spectacle_id INT(11) NOT NULL,
+                subscriber_id INT(11) NOT NULL,
+                comment TEXT NOT NULL,
+                rating SMALLINT(5) UNSIGNED CHECK (rating BETWEEN 1 AND 5),
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (spectacle_id) REFERENCES spectacles_spectacle(id) ON DELETE CASCADE,
+                FOREIGN KEY (subscriber_id) REFERENCES spectacles_subscriber(id) ON DELETE CASCADE
             );
             ";
 
