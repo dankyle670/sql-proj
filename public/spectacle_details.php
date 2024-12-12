@@ -1,64 +1,60 @@
 <?php
-// Récupérer l'ID du spectacle à partir de l'URL
-$spectacleId = $_GET['id'];
-$spectacleDetails = $spectacleController->getSpectacleDetails($spectacleId);
+require_once '../vendor/autoload.php';
+require_once __DIR__ . '/../src/Controllers/SpectacleController.php';
+
+use Controllers\SpectacleController;
+
+// Vérifier si l'ID est passé en paramètre dans l'URL
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id = $_GET['id'];
+} else {
+    echo "ID du spectacle invalide.";
+    exit;
+}
+
+// Initialisation du contrôleur
+$spectacleController = new SpectacleController();
+
+// Récupérer les détails du spectacle
+$spectacleDetails = $spectacleController->getSpectacleById($id); // Assurez-vous que cette méthode existe
+
+if (!$spectacleDetails) {
+    echo "Spectacle introuvable.";
+    exit;
+}
+
+
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Détails du Spectacle</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <h1>Détails du Spectacle</h1>
+    <header>
+        <h1>Details du spectacle: <?= htmlspecialchars($spectacleDetails['title']) ?></h1>
+    </header>
 
-    <?php if ($spectacleDetails['success']): ?>
-        <h2><?= htmlspecialchars($spectacleDetails['data']['details']['title']) ?></h2>
-        <p><?= htmlspecialchars($spectacleDetails['data']['details']['description']) ?></p>
-        
-        <h3>Acteurs</h3>
-        <ul>
-            <?php foreach ($spectacleDetails['data']['actors'] as $actor): ?>
-                <li><?= htmlspecialchars($actor['name']) ?></li>
-            <?php endforeach; ?>
-        </ul>
+    <div class="spectacle-details">
+        <p><strong>Titre :</strong> <?= htmlspecialchars($spectacleDetails['title']) ?></p>
+        <p><strong>Date :</strong> <?= htmlspecialchars($spectacleDetails['date']) ?></p>
+        <p><strong>Description :</strong> <?= nl2br(htmlspecialchars($spectacleDetails['description'])) ?></p>
+        <p><strong>Lieu :</strong> <?= htmlspecialchars($spectacleDetails['location']) ?></p>
+        <p><strong>Durée :</strong> <?= htmlspecialchars($spectacleDetails['duration']) ?> minutes</p>
+        <p><strong>Prix :</strong> <?= htmlspecialchars($spectacleDetails['price']) ?> €</p>
+        <p><strong>Type :</strong> <?= htmlspecialchars($spectacleDetails['type']) ?></p>
+        <a href="Reservation.php?id=<?= htmlspecialchars($spectacle['id']) ?>" class="btn-details">Réservez</a>
+        <!-- Lien retour à la liste des spectacles -->
+        <a href="home.php" class="btn-back">Retour à la liste</a>
+    </div>
 
-        <h3>Metteur en scène</h3>
-        <p><?= htmlspecialchars($spectacleDetails['data']['director']['name']) ?></p>
-
-        <h3>Horaires</h3>
-        <ul>
-            <?php foreach ($spectacleDetails['data']['details']['schedules'] as $schedule): ?>
-                <li><?= htmlspecialchars($schedule['date']) ?> - <?= htmlspecialchars($schedule['time']) ?></li>
-            <?php endforeach; ?>
-        </ul>
-
-        <h3>Ajouter un Commentaire</h3>
-        <form action="submit_comment.php" method="POST">
-            <textarea name="comment" placeholder="Votre commentaire"></textarea>
-            <button type="submit">Envoyer</button>
-        </form>
-
-        <!-- Carte géolocalisée du théâtre -->
-        <h3>Localisation du Théâtre</h3>
-        <div id="map"></div>
-
-    <?php else: ?>
-        <p><?= $spectacleDetails['message'] ?></p>
-    <?php endif; ?>
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
-    <script>
-        function initMap() {
-            var mapOptions = {
-                center: { lat: 48.8566, lng: 2.3522 }, // Exemple : Paris
-                zoom: 12
-            };
-            var map = new google.maps.Map(document.getElementById("map"), mapOptions);
-        }
-    </script>
+  
 </body>
+
 </html>

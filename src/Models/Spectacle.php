@@ -21,7 +21,7 @@ class Spectacle
     public function getAllSpectacles()
     {
         try {
-            $sql = "SELECT * FROM spectacles_spectacle";
+            $sql = "SELECT * FROM spectacles_spectacle LIMIT 6";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -81,15 +81,11 @@ class Spectacle
     public function getUpcomingSpectacles()
     {
         try {
-            // Date actuelle
-            $currentDate = date('Y-m-d');
+            $query = "SELECT * FROM spectacles_schedule WHERE day > NOW() ORDER BY day ASC LIMIT 4";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
 
-            // Requête SQL pour obtenir les spectacles dont la date est supérieure à aujourd'hui
-            $sql = "SELECT * FROM spectacles_spectacle WHERE date >= ? ORDER BY date ASC";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute([$currentDate]);
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error fetching upcoming spectacles: " . $e->getMessage());
             return false;
@@ -104,16 +100,19 @@ class Spectacle
     public function getSpectaclesAfterDate($date)
     {
         try {
-            $sql = "SELECT * FROM spectacles_spectacle WHERE date >= ? ORDER BY date ASC";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute([$date]);
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Utilisation correcte de la colonne `day` au lieu de `date`
+            $sql = "SELECT * FROM spectacles_schedule WHERE day >= ? ORDER BY day ASC";
+            $stmt = $this->conn->prepare($sql); // Prépare la requête
+            $stmt->execute([$date]); // Exécute avec la date passée en paramètre
+    
+            return $stmt->fetchAll(PDO::FETCH_ASSOC); // Retourne toutes les lignes
         } catch (PDOException $e) {
+            // Journalise les erreurs dans les logs du serveur
             error_log("Error fetching upcoming spectacles: " . $e->getMessage());
-            return false;
+            return false; // Retourne false en cas d'erreur
         }
     }
+    
 
 
     public function getSuggestions($query)
@@ -146,7 +145,7 @@ class Spectacle
             if ($spectacle) {
                 return $spectacle;
             } else {
-                return false; // Aucun spectacle trouvé avec cet ID
+                return false; 
             }
         } catch (PDOException $e) {
             error_log("Error fetching spectacle by ID: " . $e->getMessage());

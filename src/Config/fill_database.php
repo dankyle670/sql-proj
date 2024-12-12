@@ -15,7 +15,7 @@ $db = new Database();
 $conn = $db->getConnection();
 
 try {
-    // 1. fill Categories
+    // 1. Fill Categories
     for ($i = 0; $i < 5; $i++) {
         $name = $faker->word();
         $help_text = $faker->sentence();
@@ -24,7 +24,7 @@ try {
     }
     echo "Categories added successfully.\n";
 
-    // 2. fill Theatres
+    // 2. Fill Theatres
     for ($i = 0; $i < 3; $i++) {
         $name = $faker->company();
         $presentation = $faker->paragraph();
@@ -42,7 +42,7 @@ try {
     }
     echo "Theatres added successfully.\n";
 
-    // 3. fill Rooms
+    // 3. Fill Rooms
     for ($i = 0; $i < 5; $i++) {
         $name = $faker->word();
         $gauge = $faker->numberBetween(50, 200);
@@ -52,7 +52,7 @@ try {
     }
     echo "Rooms added successfully.\n";
 
-    // fill Spectacles
+    // 4. Fill Spectacles
     for ($i = 0; $i < 10; $i++) {
         $title = $faker->sentence(3);
         $synopsis = $faker->text(200);
@@ -66,7 +66,7 @@ try {
     }
     echo "Spectacles added successfully.\n";
 
-    // fill Performances
+    // 5. Fill Performances
     for ($i = 0; $i < 15; $i++) {
         $spectacle_id = $faker->numberBetween(1, 10);
         $room_id = $faker->numberBetween(1, 5);
@@ -78,7 +78,7 @@ try {
     }
     echo "Performances added successfully.\n";
 
-    // fill Artists
+    // 6. Fill Artists
     for ($i = 0; $i < 10; $i++) {
         $first_name = $faker->firstName();
         $last_name = $faker->lastName();
@@ -88,7 +88,7 @@ try {
     }
     echo "Artists added successfully.\n";
 
-    // fill Activities
+    // 7. Fill Activities
     for ($i = 0; $i < 15; $i++) {
         $role = $faker->jobTitle();
         $artist_id = $faker->numberBetween(1, 10);
@@ -98,7 +98,7 @@ try {
     }
     echo "Activities added successfully.\n";
 
-    // fill Subscribers
+    // 8. Fill Subscribers
     for ($i = 0; $i < 10; $i++) {
         $first_name = $faker->firstName();
         $last_name = $faker->lastName();
@@ -112,22 +112,32 @@ try {
     }
     echo "Subscribers added successfully.\n";
 
-    // fill Schedules
+    // 9. Fill Schedules
     for ($i = 0; $i < 20; $i++) {
         $day = $faker->dateTimeBetween('-1 month', '+1 month')->format('Y-m-d H:i:s');
         $booked = $faker->numberBetween(0, 1);
         $paid = $faker->numberBetween(0, 1);
         $amount = $faker->randomFloat(2, 10, 100);
-        $comment = $faker->sentence();
-        $notation = $faker->numberBetween(0, 5);
         $spectacle_id = $faker->numberBetween(1, 10);
         $subscriber_id = $faker->numberBetween(1, 10);
         $reactions = json_encode($faker->randomElements(['like', 'dislike', 'surprised', 'dubious'], $faker->numberBetween(1, 4)));
-        $conn->prepare("INSERT INTO spectacles_schedule (day, booked, paid, amount, comment, notation, spectacle_id, subscriber_id, reactions) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-             ->execute([$day, $booked, $paid, $amount, $comment, $notation, $spectacle_id, $subscriber_id, $reactions]);
+        $conn->prepare("INSERT INTO spectacles_schedule (day, booked, paid, amount, spectacle_id, subscriber_id, reactions) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?)")
+             ->execute([$day, $booked, $paid, $amount, $spectacle_id, $subscriber_id, $reactions]);
     }
     echo "Schedules added successfully.\n";
+
+    // 10. Fill Reviews
+    for ($i = 0; $i < 15; $i++) {
+        $spectacle_id = $faker->numberBetween(1, 10);
+        $subscriber_id = $faker->numberBetween(1, 10);
+        $comment = $faker->paragraph();
+        $rating = $faker->numberBetween(1, 5);
+        $conn->prepare("INSERT INTO reviews (spectacle_id, subscriber_id, comment, rating) 
+                        VALUES (?, ?, ?, ?)")
+             ->execute([$spectacle_id, $subscriber_id, $comment, $rating]);
+    }
+    echo "Reviews added successfully.\n";
 
 } catch (\Exception $e) {
     echo "Error: " . $e->getMessage();

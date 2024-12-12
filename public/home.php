@@ -1,5 +1,6 @@
 <?php
 require_once '../vendor/autoload.php';
+require_once __DIR__ . '/../src/Controllers/SpectacleController.php';
 
 use Controllers\SpectacleController;
 
@@ -28,6 +29,10 @@ $searchResults = $spectacleController->searchSpectacles($filters);
 
 // Récupérer les spectacles à venir
 $upcomingSpectacles = $spectacleController->getUpcomingSpectacles();
+
+// Récupérer tous les spectacles
+$spectacles = $spectacleController->getAllSpectacles();
+
 ?>
 
 <!DOCTYPE html>
@@ -58,22 +63,9 @@ $upcomingSpectacles = $spectacleController->getUpcomingSpectacles();
                         type="text"
                         id="search-input"
                         placeholder="Rechercher un spectacle..."
-                        autocomplete="off" />
+                        autocomplete="on" />
                     <ul id="suggestions" class="suggestions-list"></ul>
                 </div>
-
-                <select name="category_id">
-                    <option value="">--Catégorie--</option>
-                    <option value="1">Théâtre</option>
-                    <option value="2">Danse</option>
-                    <option value="3">Musique</option>
-                </select>
-                <input type="date" name="date">
-                <select name="type">
-                    <option value="">--Type--</option>
-                    <option value="classique">Classique</option>
-                    <option value="moderne">Moderne</option>
-                </select>
                 <button type="submit" class="btn">Rechercher</button>
             </form>
         </section>
@@ -85,9 +77,10 @@ $upcomingSpectacles = $spectacleController->getUpcomingSpectacles();
                 <div class="spectacles-grid">
                     <?php foreach ($searchResults['data'] as $spectacle): ?>
                         <div class="spectacle-card">
-                            <h3><?= htmlspecialchars($spectacle['title']) ?></h3>
+                            <h2><?= htmlspecialchars($spectacle['title']) ?></h2>
                             <p><strong>Date :</strong> <?= htmlspecialchars($spectacle['date']) ?></p>
-                            <p><strong>Description :</strong> <?= htmlspecialchars($spectacle['description'] ?? 'Non spécifié') ?></p>
+                            <p><strong>Description :</strong> <?= htmlspecialchars($spectacle[' synopsis'] ?? 'Non spécifié') ?></p>
+                            <a href="spectacle_details.php?id=<?= htmlspecialchars($spectacle['id']) ?>" class="btn-details">Voir Détails</a>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -103,9 +96,10 @@ $upcomingSpectacles = $spectacleController->getUpcomingSpectacles();
                 <div class="spectacles-grid">
                     <?php foreach ($upcomingSpectacles['data'] as $spectacle): ?>
                         <div class="spectacle-card">
-                            <h3><?= htmlspecialchars($spectacle['title']) ?></h3>
+                            <h2><?= htmlspecialchars($spectacle['title']) ?></h2>
                             <p><strong>Date :</strong> <?= htmlspecialchars($spectacle['date']) ?></p>
-                            <p><strong>Description :</strong> <?= htmlspecialchars($spectacle['description'] ?? 'Non spécifié') ?></p>
+                            <p><strong>Description :</strong> <?= htmlspecialchars($spectacle[' synopsis'] ?? 'Non spécifié') ?></p>
+                            <a href="spectacle_details.php?id=<?= htmlspecialchars($spectacle['id']) ?>" class="btn-details">Voir Détails</a>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -158,6 +152,5 @@ $upcomingSpectacles = $spectacleController->getUpcomingSpectacles();
         suggestionsList.innerHTML = '';
     }
 </script>
-
 
 </html>
