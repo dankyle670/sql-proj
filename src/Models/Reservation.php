@@ -14,7 +14,7 @@ class Reservation
     public function __construct()
     {
         $db = new \Config\Database();
-        $this->conn = $db->getConnection();
+        $this->conn = $db->getConnection(); 
     }
 
     // Récupérer les places disponibles pour un spectacle et un horaire donnés

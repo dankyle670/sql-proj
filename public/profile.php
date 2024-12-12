@@ -5,6 +5,10 @@ require_once '../vendor/autoload.php';
 use Controllers\ProfileController;
 use Controllers\UserController;
 
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Initialize controllers
 $profileController = new ProfileController();
 $userController = new UserController();
