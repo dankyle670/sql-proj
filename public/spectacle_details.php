@@ -49,7 +49,7 @@ if (!$spectacleDetails) {
         <p><strong>Durée :</strong> <?= htmlspecialchars($spectacleDetails['duration']) ?> minutes</p>
         <p><strong>Prix :</strong> <?= htmlspecialchars($spectacleDetails['price']) ?> €</p>
         <p><strong>Type :</strong> <?= htmlspecialchars($spectacleDetails['type']) ?></p>
-        <a href="Reservation.php?id=<?= htmlspecialchars($spectacle['id']) ?>" class="btn-details">Réservez</a>
+        <a href="reservation.php?id=<?= htmlspecialchars($id) ?>" class="btn-details">Réservez</a>
         <!-- Lien retour à la liste des spectacles -->
         <a href="home.php" class="btn-back">Retour à la liste</a>
     </div>
