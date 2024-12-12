@@ -57,35 +57,37 @@ $reviewsResult = $reviewController->getReviews($id);
         <a href="home.php" class="btn-back">Retour à la liste</a>
     </div>
 
-    <!-- Section des avis récents -->
-    <section class="reviews-section">
-        <h2>Avis récents</h2>
+<!-- Section des avis -->
+<div class="review-section">
+    <h2>Avis récents</h2>
 
-        <?php if ($reviewsResult['success']): ?>
-            <!-- Afficher les 3 derniers avis -->
-            <?php $recentReviews = array_slice($reviewsResult['data'], 0, 3); ?>
+    <?php if ($reviewsResult['success']): ?>
+        <!-- Afficher les 3 derniers avis -->
+        <?php $recentReviews = array_slice($reviewsResult['data'], 0, 3); ?>
+        <div class="reviews">
             <?php foreach ($recentReviews as $review): ?>
-                <div class="review-summary">
+                <div class="review">
                     <p><strong><?= htmlspecialchars($review['subscriber_name']); ?></strong> - <?= htmlspecialchars($review['created_at']); ?></p>
-                    <p>Note: <?= htmlspecialchars($review['rating']); ?>/5</p>
+                    <p class="rating">Note: <?= str_repeat('⭐', $review['rating']); ?></p>
                     <p><?= nl2br(htmlspecialchars($review['comment'])); ?></p>
                 </div>
             <?php endforeach; ?>
+        </div>
 
-            <!-- Bouton pour voir tous les avis -->
-            <div class="see-all-reviews">
-                <a href="all_reviews.php?spectacle_id=<?= $id ?>" class="btn-see-all">Voir tous les avis</a>
-            </div>
-        <?php else: ?>
-            <p>Aucun avis disponible pour ce spectacle.</p>
-        <?php endif; ?>
-
-    </section>
+        <!-- Bouton pour voir tous les avis -->
+        <div class="see-all-reviews">
+            <a href="all_reviews.php?spectacle_id=<?= $id ?>" class="btn-show-all">Voir tous les avis</a>
+        </div>
+    <?php else: ?>
+        <p>Aucun avis disponible pour ce spectacle.</p>
+    <?php endif; ?>
 
     <!-- Bouton pour ajouter un avis -->
     <div class="add-review-btn">
         <a href="add_review.php?spectacle_id=<?= $id ?>" class="btn-add-review">Ajouter un avis</a>
     </div>
+</div>
+
 </body>
 
 </html>

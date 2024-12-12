@@ -133,3 +133,115 @@ footer {
     text-align: center;
     padding: 10px 0;   
 }
+
+/* Section des avis */
+.review-section {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 30px;
+}
+
+.review-section h2 {
+    font-size: 1.8rem;
+    color: #4CAF50;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.review-section .reviews {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Avis individuel */
+.review-section .review {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    transition: background-color 0.3s;
+}
+
+.review-section .review:hover {
+    background-color: #f4f4f4;
+}
+
+.review-section .review p {
+    margin: 10px 0;
+    font-size: 1rem;
+}
+
+.review-section .review .rating {
+    font-weight: bold;
+    color: #ffca28;
+}
+
+/* Boutons */
+.review-section .btn-add-review,
+.review-section .btn-show-all {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px 20px;
+    margin: 15px 0;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.3s;
+}
+
+.review-section .btn-add-review:hover,
+.review-section .btn-show-all:hover {
+    background-color: #45A049;
+}
+
+/* Formulaire d'ajout d'avis */
+.add-review-form {
+    background-color: #fff;
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.add-review-form h3 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #4CAF50;
+}
+
+.add-review-form label {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.add-review-form input,
+.add-review-form select,
+.add-review-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    background-color: #f9f9f9;
+}
+
+.add-review-form button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.add-review-form button:hover {
+    background-color: #45A049;
+}
