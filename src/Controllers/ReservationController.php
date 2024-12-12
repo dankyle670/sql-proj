@@ -2,35 +2,40 @@
 
 namespace Controllers;
 
+require_once __DIR__ . '/../Models/Reservation.php';
+
 use Models\Reservation;
 
 class ReservationController
 {
-    private $reservationModel; // On utilise Reservation et non Spectacle
+    private $reservationModel;
 
     public function __construct()
     {
-        // Initialisation du modèle de réservation (assurez-vous que ce modèle existe)
-        $this->reservationModel = new ReservationController(); // Le modèle de réservation
+        // Charger le modèle Reservation
+        $this->reservationModel = new Reservation();
     }
 
-    // Récupérer les places disponibles pour un spectacle et une programmation donnée
+    // Récupérer les places disponibles pour un spectacle et un horaire donné
     public function getAvailableSeats($spectacleId, $scheduleId)
     {
-        // Appel de la méthode getAvailableSeats dans le modèle Reservation
         $seats = $this->reservationModel->getAvailableSeats($spectacleId, $scheduleId);
-        return ['success' => true, 'data' => $seats];
+        if ($seats) {
+            return ['success' => true, 'data' => $seats];
+        } else {
+            return ['success' => false, 'message' => 'Aucune place disponible trouvée.'];
+        }
     }
 
-    // Réserver une place pour un spectacle et une programmation donnés
+    // Réserver une place pour un spectacle et un horaire donnés
     public function reserveSeat($spectacleId, $scheduleId, $seatId)
     {
-        // Appel de la méthode reserveSeat dans le modèle Reservation
         $result = $this->reservationModel->reserveSeat($spectacleId, $scheduleId, $seatId);
         if ($result) {
             return ['success' => true, 'message' => 'Réservation effectuée avec succès.'];
         } else {
-            return ['success' => false, 'message' => 'Erreur lors de la réservation.'];
+            return ['success' => false, 'message' => 'Erreur lors de la réservation ou la place est déjà réservée.'];
         }
     }
 }
+?>

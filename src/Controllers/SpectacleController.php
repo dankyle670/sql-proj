@@ -74,6 +74,14 @@ class SpectacleController
         return ['success' => false, 'message' => 'Aucune suggestion trouvée.'];
     }
 
+    public function getSpectacleById($id) {
+        // Instancier le modèle Spectacle
+        $spectacleModel = new Spectacle();
+
+        // Appeler la méthode pour récupérer les détails du spectacle depuis la base de données
+        return $spectacleModel->getSpectacleById($id); // Cette méthode doit exister dans votre modèle Spectacle
+    }
+
     /**
      * Récupérer les détails d'un spectacle
      * 
