@@ -106,6 +106,19 @@ class UserController
 
         return ['success' => false, 'message' => 'User not found.'];
     }
+
+    public function isAuthenticated()
+    {
+        session_start();
+        return !empty($_SESSION['user_id']);
+    }
+
+    // Get the authenticated user's ID
+    public function getAuthenticatedUserId()
+    {
+        session_start();
+        return $_SESSION['user_id'] ?? null;
+    }
 }
 
 ?>
