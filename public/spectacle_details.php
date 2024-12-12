@@ -1,29 +1,40 @@
 <?php
-// Page pour afficher les détails du spectacle et gérer les commentaires
+// Connexion à la base de données
+require_once 'includes/database.php';
 
-require_once 'vendor/autoload.php'; // Si Composer est utilisé, sinon supprime cette ligne.
+// Récupérer l'ID du spectacle depuis l'URL
+$spectacleId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-use Ousmanesacko\SpectacleTest\ReviewController;
+// Vérifier si l'ID est valide
+if ($spectacleId <= 0) {
+    die("Spectacle non valide !");
+}
 
-// Simule un contrôleur (utiliser ton propre contrôleur réel dans un projet complet)
-$reviewController = new ReviewController();
+// Préparer et exécuter la requête SQL
+$query = $db->prepare("
+    SELECT 
+        s.id AS spectacle_id,
+        s.name AS spectacle_name,
+        s.description AS spectacle_description,
+        t.name AS theatre_name,
+        t.address AS theatre_address,
+        t.phone AS theatre_phone,
+        t.email AS theatre_email
+    FROM 
+        spectacles_spectacle s
+    JOIN 
+        spectacles_theatre t
+    ON 
+        s.theatre_id = t.id
+    WHERE 
+        s.id = :spectacle_id
+");
+$query->execute(['spectacle_id' => $spectacleId]);
+$spectacle = $query->fetch();
 
-// Gestion du formulaire
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $subscriberId = $_POST['subscriber_id'] ?? 1; // Simule l'utilisateur connecté
-    $spectacleId = $_POST['spectacle_id'] ?? 1;   // Simule l'ID du spectacle
-    $data = [
-        'spectacle_id' => $spectacleId,
-        'subscriber_id' => $subscriberId,
-        'comment' => trim($_POST['commentaire'] ?? ''),
-        'rating' => (int)($_POST['NOTE'] ?? 0)
-    ];
-    $result = $reviewController->addReview($data);
-    if ($result['success']) {
-        $successMessage = "Merci pour votre commentaire !";
-    } else {
-        $errorMessage = "Erreur : " . htmlspecialchars($result['message']);
-    }
+// Vérifier si le spectacle existe
+if (!$spectacle) {
+    die("Spectacle introuvable !");
 }
 ?>
 
@@ -32,9 +43,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détails du Spectacle</title>
+    <title><?php echo htmlspecialchars($spectacle['spectacle_name']); ?></title>
     <style>
-        /* Styles CSS intégrés */
+        /* Styles intégrés ici */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -42,19 +53,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background-color: #f4f9fc;
             color: #333;
         }
-
         .header {
-            background-color: #007BFF; /* Bleu foncé */
+            background-color: #007BFF;
             color: white;
             text-align: center;
             padding: 20px;
         }
-
         .header h1 {
             margin: 0;
             font-size: 2rem;
         }
-
         .container {
             max-width: 900px;
             margin: 20px auto;
@@ -63,90 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
-        .spectacle-header {
-            text-align: center;
-        }
-
-        .spectacle-header img {
-            width: 100%;
-            max-width: 600px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .spectacle-header h2 {
-            font-size: 2rem;
-            color: #007BFF;
-        }
-
-        .spectacle-info h3 {
-            color: #007BFF;
-            border-bottom: 2px solid #007BFF;
-            padding-bottom: 5px;
-        }
-
-        .spectacle-info p {
-            font-size: 1.1rem;
-            margin: 10px 0;
-        }
-
-        .location iframe {
-            width: 100%;
-            max-width: 600px;
-            height: 400px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-
-        .comments {
-            margin-top: 30px;
-        }
-
-        .comments form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .comments textarea {
-            resize: none;
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        .comments select {
-            margin-bottom: 10px;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .comments .btn {
-            background-color: #007BFF;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .comments .btn:hover {
-            background-color: #0056b3;
-        }
-
-        .success-message {
-            color: green;
-            font-weight: bold;
-        }
-
-        .error-message {
-            color: red;
-            font-weight: bold;
-        }
-
         .footer {
             text-align: center;
             padding: 15px;
@@ -158,67 +82,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <header class="header">
-        <h1>Détails du Spectacle</h1>
+        <h1><?php echo htmlspecialchars($spectacle['spectacle_name']); ?></h1>
     </header>
 
     <div class="container">
-        <!-- Image et titre -->
-        <div class="spectacle-header">
-            <img src="images/spectacle1.jpg" alt="Image du Spectacle" class="spectacle-image">
-            <h2>Les étoiles de Paris</h2>
-        </div>
+        <h2>À propos du spectacle</h2>
+        <p><?php echo htmlspecialchars($spectacle['spectacle_description']); ?></p>
 
-        <!-- Informations -->
-        <div class="spectacle-info">
-            <h3>Informations :</h3>
-            <p><strong>Acteurs :</strong> Jean Dupont, Marie Curie</p>
-            <p><strong>Metteur en scène :</strong> Pierre Martin</p>
-            <p><strong>Horaires :</strong> Du lundi au vendredi, à 19h00</p>
-        </div>
-
-        <!-- Messages -->
-        <?php if (!empty($successMessage)): ?>
-            <p class="success-message"><?= htmlspecialchars($successMessage) ?></p>
-        <?php elseif (!empty($errorMessage)): ?>
-            <p class="error-message"><?= htmlspecialchars($errorMessage) ?></p>
-        <?php endif; ?>
-
-        <!-- Carte -->
-        <div class="location">
-            <h3>Localisation du Théâtre</h3>
-            <iframe 
-                src="https://www.google.com/maps/embed?pb=YOUR_MAP_LINK_HERE" 
-                width="600" 
-                height="450" 
-                style="border:0;" 
-                allowfullscreen="" 
-                loading="lazy">
-            </iframe>
-        </div>
-
-        <!-- Commentaires -->
-        <div class="comments">
-            <h3>Ajouter un commentaire :</h3>
-            <form method="POST" action="details_spectacle.php">
-                <input type="hidden" name="subscriber_id" value="1">
-                <input type="hidden" name="spectacle_id" value="1">
-                <label for="commentaire">Votre commentaire :</label><br>
-                <textarea id="commentaire" name="commentaire" rows="5" cols="40" required></textarea><br><br>
-                <label for="NOTE">Note :</label><br>
-                <select id="NOTE" name="NOTE" required>
-                    <option value="1">1 - Mauvais</option>
-                    <option value="2">2 - Moyen</option>
-                    <option value="3">3 - Bon</option>
-                    <option value="4">4 - Très Bon</option>
-                    <option value="5">5 - Excellent</option>
-                </select><br><br>
-                <button type="submit" class="btn">Soumettre</button>
-            </form>
-        </div>
+        <h2>Informations sur le théâtre</h2>
+        <p><strong>Nom :</strong> <?php echo htmlspecialchars($spectacle['theatre_name']); ?></p>
+        <p><strong>Adresse :</strong> <?php echo htmlspecialchars($spectacle['theatre_address']); ?></p>
+        <p><strong>Téléphone :</strong> <?php echo htmlspecialchars($spectacle['theatre_phone']); ?></p>
+        <p><strong>Email :</strong> <?php echo htmlspecialchars($spectacle['theatre_email']); ?></p>
     </div>
 
     <footer class="footer">
-        <p>&copy; 2024 - Le Spectacles</p>
+        <p>&copy; 2024 - Mon Projet de Spectacles</p>
     </footer>
 </body>
 </html>
