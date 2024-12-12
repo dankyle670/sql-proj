@@ -1,19 +1,10 @@
 <?php
-// Vérifier que les clés existent dans $_GET
-if (isset($_GET['id']) && isset($_GET['schedule_id'])) {
-    $spectacleId = $_GET['id'];
-    $scheduleId = $_GET['schedule_id'];
-} else {
-    // Si les paramètres ne sont pas définis, afficher une erreur
-    die('Paramètres manquants pour la réservation.');
-}
 
 // Initialisation du contrôleur de réservation
-require_once '../Controllers/ReservationController.php';
-$reservationController = new ReservationController();
-
+require_once '../src/Controllers/ReservationController.php';
+$ReservationController = new ReservationController();
 // Appel de la méthode getAvailableSeats pour récupérer les places disponibles
-$availableSeats = $reservationController->getAvailableSeats($spectacleId, $scheduleId);
+$availableSeats = $ReservationController->getAvailableSeats($spectacleId, $scheduleId);
 
 if ($availableSeats['success']) {
     // Afficher les places disponibles
@@ -33,7 +24,7 @@ if ($availableSeats['success']) {
     <title>Réservation</title>
 </head>
 <body>
-    <h1>Réservation pour le spectacle</h1>
+    <h1>Réservation pour legyutdoytdoiytdoyt spectacle</h1>
 
     <?php if ($availableSeats['success']): ?>
         <h2>Places disponibles</h2>
