@@ -1,0 +1,5 @@
+Action	Commande SQL
+Voir toute la structure de la table:	DESCRIBE nom_de_la_table;
+Voir toutes les données:	SELECT * FROM nom_de_la_table;
+Limiter les résultats:	SELECT * FROM nom_de_la_table LIMIT n;
+Filtrer les résultats:	SELECT * FROM nom_de_la_table WHERE condition;
