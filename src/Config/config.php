@@ -5,7 +5,7 @@ return [
         'host' => 'localhost',
         'dbname' => 'spectacles_db',
         'user' => 'root',
-        'password' => 'azertyuiop',
+        'password' => 'HKdfnbb6-op',
         'charset' => 'utf8mb4',
     ],
 ];
