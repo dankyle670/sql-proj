@@ -58,7 +58,11 @@ class UserController
 
         // Verify the password
         if (password_verify($data['password'], $user['password'])) {
-            session_start();
+            // Start session if not already started
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+            
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
 
@@ -71,9 +75,12 @@ class UserController
     // Handle User Logout
     public function logout()
     {
-        session_start();
+        // Start session if not already started
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
         session_destroy();
-
         return ['success' => true, 'message' => 'Logout successful.'];
     }
 
@@ -84,10 +91,12 @@ class UserController
             return ['success' => false, 'message' => 'No data provided for update.'];
         }
 
+        // If password is provided, hash it
         if (!empty($data['password'])) {
             $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
         }
 
+        // Update user profile
         if ($this->userModel->updateUser($userId, $data)) {
             return ['success' => true, 'message' => 'Profile updated successfully.'];
         }
@@ -100,25 +109,33 @@ class UserController
     {
         $user = $this->userModel->getUserById($userId);
         if ($user) {
-            unset($user['password']);
+            unset($user['password']); // Don't return password
             return ['success' => true, 'data' => $user];
         }
 
         return ['success' => false, 'message' => 'User not found.'];
     }
 
+    // Check if the user is authenticated
     public function isAuthenticated()
     {
-        session_start();
+        // Start session if not already started
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
         return !empty($_SESSION['user_id']);
     }
 
     // Get the authenticated user's ID
     public function getAuthenticatedUserId()
     {
-        session_start();
+        // Start session if not already started
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
         return $_SESSION['user_id'] ?? null;
     }
 }
-
 ?>

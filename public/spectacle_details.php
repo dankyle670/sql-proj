@@ -37,7 +37,7 @@ $reviewsResult = $reviewController->getReviews($id);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Détails du Spectacle</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="spectacle-details.css">
 </head>
 
 <body>
@@ -53,7 +53,8 @@ $reviewsResult = $reviewController->getReviews($id);
         <p><strong>Durée :</strong> <?= htmlspecialchars($spectacleDetails['duration']) ?> minutes</p>
         <p><strong>Prix :</strong> <?= htmlspecialchars($spectacleDetails['price']) ?> €</p>
         <p><strong>Type :</strong> <?= htmlspecialchars($spectacleDetails['type']) ?></p>
-        <a href="Reservation.php?id=<?= htmlspecialchars($spectacleDetails['id']) ?>" class="btn-details">Réservez</a>
+        <a href="reservation.php?id=<?= htmlspecialchars($id) ?>" class="btn-details">Réservez</a>
+        <!-- Lien retour à la liste des spectacles -->
         <a href="home.php" class="btn-back">Retour à la liste</a>
     </div>
 

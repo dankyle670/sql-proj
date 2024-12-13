@@ -5,6 +5,10 @@ require_once '../vendor/autoload.php';
 use Controllers\ProfileController;
 use Controllers\UserController;
 
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Initialize controllers
 $profileController = new ProfileController();
 $userController = new UserController();
@@ -84,52 +88,65 @@ if (!$profile) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
+    <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-    <h1>User Profile</h1>
+    <div class="container">
+        <h1>User Profile</h1>
 
-    <!-- Logout Button -->
-    <form method="POST" action="profile.php">
-        <button type="submit" name="logout">Logout</button>
-    </form>
+        <!-- Logout Button -->
+        <form method="POST" action="profile.php" class="logout-form">
+            <button type="submit" name="logout" class="logout-button">Logout</button>
+        </form>
 
-    <!-- Profile Update Form -->
-    <form method="POST" action="profile.php">
-        <input type="hidden" name="update_profile" value="1">
+        <?php
+        if (isset($result)) {
+            if ($result['success']) {
+                echo "<p class='success-message'>" . htmlspecialchars($result['message']) . "</p>";
+            } else {
+                echo "<p class='error-message'>" . htmlspecialchars($result['message']) . "</p>";
+            }
+        }
+        ?>
 
-        <label for="first_name">First Name:</label><br>
-        <input type="text" id="first_name" name="first_name" value="<?php echo htmlspecialchars($profile['first_name']); ?>" required><br><br>
+        <!-- Profile Update Form -->
+        <form method="POST" action="profile.php">
+            <input type="hidden" name="update_profile" value="1">
 
-        <label for="last_name">Last Name:</label><br>
-        <input type="text" id="last_name" name="last_name" value="<?php echo htmlspecialchars($profile['last_name']); ?>" required><br><br>
+            <label for="first_name">First Name:</label>
+            <input type="text" id="first_name" name="first_name" value="<?php echo htmlspecialchars($profile['first_name']); ?>" required>
 
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($profile['email']); ?>" required><br><br>
+            <label for="last_name">Last Name:</label>
+            <input type="text" id="last_name" name="last_name" value="<?php echo htmlspecialchars($profile['last_name']); ?>" required>
 
-        <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($profile['username']); ?>" required><br><br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($profile['email']); ?>" required>
 
-        <label for="birthdate">Birthdate:</label><br>
-        <input type="date" id="birthdate" name="birthdate" value="<?php echo htmlspecialchars($profile['birthdate']); ?>"><br><br>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($profile['username']); ?>" required>
 
-        <button type="submit">Update Profile</button>
-    </form>
+            <label for="birthdate">Birthdate:</label>
+            <input type="date" id="birthdate" name="birthdate" value="<?php echo htmlspecialchars($profile['birthdate']); ?>">
 
-    <h2>Change Password</h2>
-    <!-- Password Change Form -->
-    <form method="POST" action="profile.php">
-        <input type="hidden" name="change_password" value="1">
+            <button type="submit">Update Profile</button>
+        </form>
 
-        <label for="current_password">Current Password:</label><br>
-        <input type="password" id="current_password" name="current_password" required><br><br>
+        <h2>Change Password</h2>
+        <!-- Password Change Form -->
+        <form method="POST" action="profile.php">
+            <input type="hidden" name="change_password" value="1">
 
-        <label for="new_password">New Password:</label><br>
-        <input type="password" id="new_password" name="new_password" required><br><br>
+            <label for="current_password">Current Password:</label>
+            <input type="password" id="current_password" name="current_password" required>
 
-        <label for="confirm_password">Confirm New Password:</label><br>
-        <input type="password" id="confirm_password" name="confirm_password" required><br><br>
+            <label for="new_password">New Password:</label>
+            <input type="password" id="new_password" name="new_password" required>
 
-        <button type="submit">Change Password</button>
-    </form>
+            <label for="confirm_password">Confirm New Password:</label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
+
+            <button type="submit">Change Password</button>
+        </form>
+    </div>
 </body>
 </html>

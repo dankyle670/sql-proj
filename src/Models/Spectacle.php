@@ -37,28 +37,33 @@ class Spectacle
     public function searchSpectacles($filters)
     {
         try {
-            $sql = "SELECT * FROM spectacles_spectacle WHERE 1=1";
+            $sql = "SELECT * FROM spectacles_spectacle WHERE 1=1"; // On commence avec une condition qui est toujours vraie
             $params = [];
 
-            if (!empty($filters['title'])) {
+            // Log de la requête SQL avant l'exécution
+            error_log("SQL avant filtrage : " . $sql);
+
+            // Filtre par titre
+            if (!empty($filters['search'])) {
                 $sql .= " AND title LIKE ?";
-                $params[] = '%' . $filters['title'] . '%';
+                $params[] = '%' . $filters['search'] . '%';
             }
 
+            // Filtre par catégorie
             if (!empty($filters['category_id'])) {
                 $sql .= " AND category_id = ?";
                 $params[] = $filters['category_id'];
             }
 
+            // Filtre par date
             if (!empty($filters['date'])) {
                 $sql .= " AND DATE(date) = ?";
                 $params[] = $filters['date'];
             }
 
-            if (!empty($filters['type'])) {
-                $sql .= " AND type = ?";
-                $params[] = $filters['type'];
-            }
+            // Log des filtres appliqués
+            error_log("SQL après filtrage : " . $sql);
+            error_log("Paramètres SQL : " . print_r($params, true));
 
             $stmt = $this->conn->prepare($sql);
             $stmt->execute($params);
@@ -72,53 +77,29 @@ class Spectacle
     /**
      * Récupérer les spectacles à venir
      */
-
-    /**
-     * Récupérer les spectacles à venir
-     * 
-     * @return array|bool Liste des spectacles à venir ou false en cas d'échec
-     */
     public function getUpcomingSpectacles()
     {
         try {
             $query = "SELECT * FROM spectacles_schedule WHERE day > NOW() ORDER BY day ASC LIMIT 4";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error fetching upcoming spectacles: " . $e->getMessage());
             return false;
         }
     }
+
     /**
-     * Récupérer les spectacles après une certaine date.
-     *
-     * @param string $date Date de référence (format `Y-m-d`).
-     * @return array|bool Liste des spectacles ou `false` en cas d'échec.
+     * Récupérer les suggestions de spectacles
      */
-    public function getSpectaclesAfterDate($date)
-    {
-        try {
-            // Utilisation correcte de la colonne `day` au lieu de `date`
-            $sql = "SELECT * FROM spectacles_schedule WHERE day >= ? ORDER BY day ASC";
-            $stmt = $this->conn->prepare($sql); // Prépare la requête
-            $stmt->execute([$date]); // Exécute avec la date passée en paramètre
-    
-            return $stmt->fetchAll(PDO::FETCH_ASSOC); // Retourne toutes les lignes
-        } catch (PDOException $e) {
-            // Journalise les erreurs dans les logs du serveur
-            error_log("Error fetching upcoming spectacles: " . $e->getMessage());
-            return false; // Retourne false en cas d'erreur
-        }
-    }
-    
-
-
     public function getSuggestions($query)
     {
         try {
-            // Effectuer une recherche par titre partiel
+            // Log de la requête avant exécution
+            error_log("SQL pour suggestions : SELECT id, title FROM spectacles_spectacle WHERE title LIKE '%$query%' LIMIT 10");
+
             $sql = "SELECT id, title FROM spectacles_spectacle WHERE title LIKE ? LIMIT 10";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute(['%' . $query . '%']);
@@ -133,27 +114,19 @@ class Spectacle
     public function getSpectacleById($spectacleId)
     {
         try {
-            // Requête pour obtenir les informations de base du spectacle
             $sql = "SELECT * FROM spectacles_spectacle WHERE id = :spectacleId";
             $stmt = $this->conn->prepare($sql);
             $stmt->bindParam(':spectacleId', $spectacleId, PDO::PARAM_INT);
             $stmt->execute();
-            
-            // Vérifier si un spectacle a été trouvé
-            $spectacle = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($spectacle) {
-                return $spectacle;
-            } else {
-                return false; 
-            }
+            return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error fetching spectacle by ID: " . $e->getMessage());
             return false;
         }
     }
 
-
+    
     public function getAvailableSeats($spectacleId, $scheduleId)
     {
         try {
@@ -209,3 +182,5 @@ class Spectacle
         }
     }
 }
+
+

@@ -32,21 +32,28 @@ class SpectacleController
      */
     public function searchSpectacles($filters)
     {
+        // Log des filtres reçus pour le débogage
+        error_log("Filtres reçus : " . print_r($filters, true));
+
+        // Appeler le modèle pour récupérer les spectacles filtrés
         $result = $this->spectacleModel->searchSpectacles($filters);
+
+        // Log des résultats
+        error_log("Résultats de la recherche : " . print_r($result, true));
+
+        // Retourner les résultats ou un message d'erreur
         if ($result) {
             return ['success' => true, 'data' => $result];
         }
+
         return ['success' => false, 'message' => 'Aucun spectacle trouvé pour ces critères.'];
     }
 
     /**
      * Récupérer les spectacles à venir
-     * 
-     * @return array Les spectacles à venir
      */
     public function getUpcomingSpectacles()
     {
-        // Appel de la méthode modèle pour obtenir les spectacles à venir
         $spectacles = $this->spectacleModel->getUpcomingSpectacles();
 
         if ($spectacles) {
@@ -58,14 +65,17 @@ class SpectacleController
 
     /**
      * Récupérer les suggestions de spectacles en fonction du texte saisi.
-     *
-     * @param string $query Texte saisi par l'utilisateur
-     * @return array Résultats des suggestions
      */
     public function getSuggestions($query)
     {
+        // Log de la requête de suggestions
+        error_log("Recherche de suggestions pour : " . $query);
+
         // Appeler le modèle pour récupérer les suggestions
         $result = $this->spectacleModel->getSuggestions($query);
+
+        // Log des résultats des suggestions
+        error_log("Suggestions trouvées : " . print_r($result, true));
 
         if ($result) {
             return ['success' => true, 'data' => $result];
@@ -74,32 +84,22 @@ class SpectacleController
         return ['success' => false, 'message' => 'Aucune suggestion trouvée.'];
     }
 
-    public function getSpectacleById($id) {
-        // Instancier le modèle Spectacle
-        $spectacleModel = new Spectacle();
-
-        // Appeler la méthode pour récupérer les détails du spectacle depuis la base de données
-        return $spectacleModel->getSpectacleById($id); // Cette méthode doit exister dans votre modèle Spectacle
+    public function getSpectacleById($id)
+    {
+        return $this->spectacleModel->getSpectacleById($id);
     }
 
     /**
      * Récupérer les détails d'un spectacle
-     * 
-     * @param int $spectacleId L'ID du spectacle
-     * @return array Détails du spectacle
      */
     public function getSpectacleDetails($spectacleId)
     {
-        // Appeler la méthode du modèle pour obtenir les détails du spectacle
         $details = $this->spectacleModel->getSpectacleById($spectacleId);
 
         if ($details) {
-            // Ajouter des informations supplémentaires comme les acteurs et le metteur en scène
-            // Assurez-vous que ces méthodes existent dans le modèle
             $actors = $this->spectacleModel->getActorsForSpectacle($spectacleId);
             $director = $this->spectacleModel->getDirectorForSpectacle($spectacleId);
 
-            // Retourner toutes les informations
             return ['success' => true, 'data' => [
                 'details' => $details,
                 'actors' => $actors,
