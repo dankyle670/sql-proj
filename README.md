@@ -53,7 +53,9 @@ Avant de commencer, assurez-vous d'avoir installé :
     cd your-project-folder
 
 3. Installez les dépendances avec Composer:
+    **composer require fakerphp/faker**
     **composer install**
+
 
 4. Configurez votre base de données:
 
