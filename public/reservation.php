@@ -1,4 +1,5 @@
 <?php
+
 // Inclusion du contrôleur
 require_once __DIR__ . '/../src/Controllers/ReservationController.php';
 use Controllers\ReservationController;
@@ -14,7 +15,8 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 $reservationController = new ReservationController();
 
 // Obtenir les places disponibles
-$availableSeats = $reservationController->getAvailableSeats($spectacleId, null); 
+$availableSeats = $reservationController->getAvailableSeats($spectacleId, null); // Pas besoin de schedule_id ici
+
 ?>
 
 <!DOCTYPE html>
@@ -23,25 +25,51 @@ $availableSeats = $reservationController->getAvailableSeats($spectacleId, null);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Réservation</title>
-    <link rel="stylesheet" href="style.css"> <!-- Lien vers le fichier CSS -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Réservation pour le Spectacle</h1>
 
-        <?php if ($availableSeats['success']): ?>
-            <h2>Places disponibles</h2>
-            <ul>
-                <?php foreach ($availableSeats['data'] as $seat): ?>
-                    <li>
-                        Place n°<?= htmlspecialchars($seat['seat_number']) ?>
-                        <a href="reserve.php?id=<?= $spectacleId ?>&seat_id=<?= htmlspecialchars($seat['id']) ?>">Réserver</a>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php else: ?>
-            <p class="error"><?= htmlspecialchars($availableSeats['message']) ?></p>
-        <?php endif; ?>
-    </div>
+    <h1>Réservation pour le Spectacle</h1>
+
+    <?php if ($availableSeats['success']): ?>
+        <h2>Places disponibles</h2>
+        <p>Nombre de places disponibles : <?= count($availableSeats['data']) ?></p>
+        <ul>
+            <?php foreach ($availableSeats['data'] as $seat): ?>
+                <li>
+                    Place n°<?= htmlspecialchars(is_array($seat) ? $seat['seat_number'] : $seat) ?>
+                    <a href="reserve.php?id=<?= $spectacleId ?>&seat_id=<?= htmlspecialchars(is_array($seat) ? $seat['id'] : $seat) ?>">Réserver</a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <p class="error"><?= htmlspecialchars($availableSeats['message']) ?></p>
+    <?php endif; ?>
 </body>
 </html>
