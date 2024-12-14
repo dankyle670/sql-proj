@@ -13,7 +13,27 @@ class ReviewController
         $this->reviewModel = new Review();
     }
 
+
+    // Get all reviews for a specific spectacle
+
+    public function getReviewsBySpectacleId($spectacleId)
+    {
+        if (!is_numeric($spectacleId)) {
+            return ['success' => false, 'message' => 'Invalid spectacle ID.'];
+        }
+
+        $reviews = $this->reviewModel->getReviewsBySpectacleId($spectacleId);
+
+        if ($reviews) {
+            return ['success' => true, 'data' => $reviews];
+        }
+
+        return ['success' => false, 'message' => 'No reviews found for this spectacle.'];
+    }
+
+
     // Add a review
+
     public function addReview($data)
     {
         $validationResult = $this->validateReviewData($data);
@@ -28,18 +48,9 @@ class ReviewController
         return ['success' => false, 'message' => 'Failed to add review. Please try again later.'];
     }
 
-    // Get reviews for a spectacle
-    public function getReviews($spectacleId)
-    {
-        $reviews = $this->reviewModel->getReviewsBySpectacle($spectacleId);
-        if ($reviews) {
-            return ['success' => true, 'data' => $reviews];
-        }
-
-        return ['success' => false, 'message' => 'No reviews found for this spectacle.'];
-    }
 
     // Delete a review
+
     public function deleteReview($reviewId)
     {
         if ($this->reviewModel->deleteReview($reviewId)) {
@@ -49,7 +60,9 @@ class ReviewController
         return ['success' => false, 'message' => 'Failed to delete review.'];
     }
 
+
     // Validate review data
+
     private function validateReviewData($data)
     {
         if (empty($data['spectacle_id']) || empty($data['subscriber_id']) || empty($data['comment']) || empty($data['rating'])) {

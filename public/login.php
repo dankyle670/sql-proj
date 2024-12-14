@@ -5,6 +5,12 @@ use Controllers\UserController;
 
 session_start();
 
+// Redirect to home page if already logged in
+if (isset($_SESSION['user_id'])) {
+    header('Location: home.php');
+    exit();
+}
+
 $authController = new UserController();
 $error = '';
 
@@ -18,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = $authController->login($data);
 
     if ($result['success']) {
+        // No need to store session data here as it's handled in the controller
         header('Location: home.php');
         exit();
     } else {

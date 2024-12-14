@@ -1,9 +1,5 @@
 <?php
 
-// Controller to manage users
-// - Registration, login, profile updates, etc.
-// Responsible: DK (Connection and security), AS (User profile management)
-
 namespace Controllers;
 
 use Models\User;
@@ -30,6 +26,9 @@ class UserController
         if ($this->userModel->getUserByEmail($data['email'])) {
             return ['success' => false, 'message' => 'This email is already registered.'];
         }
+
+        // Assign role (default to Subscriber)
+        $data['role'] = $data['role'] ?? 'Subscriber';
 
         // Hash the password
         $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
@@ -62,9 +61,11 @@ class UserController
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
-            
+
+            // Store session data
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
+            $_SESSION['user_role'] = $user['role'] ?? 'Subscriber'; // Default role
 
             return ['success' => true, 'message' => 'Login successful.'];
         }
@@ -74,15 +75,17 @@ class UserController
 
     // Handle User Logout
     public function logout()
-    {
-        // Start session if not already started
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
-        
-        session_destroy();
-        return ['success' => true, 'message' => 'Logout successful.'];
+{
+    // Start session if not already started
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
     }
+    // Destroy the session
+    session_unset();
+    session_destroy();
+    // Optionally, redirect to home or return a success message
+    return ['success' => true, 'message' => 'Logout successful.'];
+}
 
     // Handle Update User Profile
     public function updateProfile($userId, $data)
@@ -119,23 +122,30 @@ class UserController
     // Check if the user is authenticated
     public function isAuthenticated()
     {
-        // Start session if not already started
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-        
+
         return !empty($_SESSION['user_id']);
     }
 
     // Get the authenticated user's ID
     public function getAuthenticatedUserId()
     {
-        // Start session if not already started
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
 
         return $_SESSION['user_id'] ?? null;
     }
+
+    // Get the authenticated user's role
+    public function getAuthenticatedUserRole()
+    {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        return $_SESSION['user_role'] ?? 'Subscriber';
+    }
 }
-?>

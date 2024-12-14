@@ -15,7 +15,55 @@ $db = new Database();
 $conn = $db->getConnection();
 
 try {
-    // 1. Fill Categories
+    // 1. Fill Roles (Avoiding duplicates)
+    $roles = [
+        ['name' => 'Admin', 'description' => 'System administrator'],
+        ['name' => 'Subscriber', 'description' => 'Regular subscriber'],
+        ['name' => 'Moderator', 'description' => 'Content moderator']
+    ];
+
+    foreach ($roles as $role) {
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM roles WHERE name = ?");
+        $stmt->execute([$role['name']]);
+        $exists = $stmt->fetchColumn();
+
+        if (!$exists) {
+            $conn->prepare("INSERT INTO roles (name, description) VALUES (?, ?)")
+                 ->execute([$role['name'], $role['description']]);
+        }
+    }
+    echo "Roles added successfully.\n";
+
+    // 2. Create Admin Account (Avoiding duplicates)
+    $adminPassword = password_hash('jesuisla', PASSWORD_BCRYPT); // Securely hash the password
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM spectacles_subscriber WHERE username = ?");
+    $stmt->execute(['admin']);
+    $adminExists = $stmt->fetchColumn();
+
+    if (!$adminExists) {
+        // Fetch the role_id for Admin
+        $stmt = $conn->prepare("SELECT id FROM roles WHERE name = ?");
+        $stmt->execute(['Admin']);
+        $adminRoleId = $stmt->fetchColumn();
+
+        // Insert the Admin user
+        $conn->prepare("INSERT INTO spectacles_subscriber (first_name, last_name, email, username, password, birthdate, role_id) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?)")
+             ->execute([
+                 'Admin',
+                 'User',
+                 'admin@example.com',
+                 'admin',
+                 $adminPassword,
+                 '1990-01-01',
+                 $adminRoleId
+             ]);
+        echo "Admin account created successfully.\n";
+    } else {
+        echo "Admin account already exists.\n";
+    }
+
+    // 3. Fill Categories
     for ($i = 0; $i < 5; $i++) {
         $name = $faker->word();
         $help_text = $faker->sentence();
@@ -24,7 +72,7 @@ try {
     }
     echo "Categories added successfully.\n";
 
-    // 2. Fill Theatres
+    // 4. Fill Theatres
     for ($i = 0; $i < 3; $i++) {
         $name = $faker->company();
         $presentation = $faker->paragraph();
@@ -42,7 +90,7 @@ try {
     }
     echo "Theatres added successfully.\n";
 
-    // 3. Fill Rooms
+    // 5. Fill Rooms
     for ($i = 0; $i < 5; $i++) {
         $name = $faker->word();
         $gauge = $faker->numberBetween(50, 200);
@@ -52,7 +100,7 @@ try {
     }
     echo "Rooms added successfully.\n";
 
-    // 4. Fill Spectacles
+    // 6. Fill Spectacles
     for ($i = 0; $i < 10; $i++) {
         $title = $faker->sentence(3);
         $synopsis = $faker->text(200);
@@ -66,7 +114,7 @@ try {
     }
     echo "Spectacles added successfully.\n";
 
-    // 5. Fill Performances
+    // 7. Fill Performances
     for ($i = 0; $i < 15; $i++) {
         $spectacle_id = $faker->numberBetween(1, 10);
         $room_id = $faker->numberBetween(1, 5);
@@ -78,7 +126,7 @@ try {
     }
     echo "Performances added successfully.\n";
 
-    // 6. Fill Artists
+    // 8. Fill Artists
     for ($i = 0; $i < 10; $i++) {
         $first_name = $faker->firstName();
         $last_name = $faker->lastName();
@@ -88,7 +136,7 @@ try {
     }
     echo "Artists added successfully.\n";
 
-    // 7. Fill Activities
+    // 9. Fill Activities
     for ($i = 0; $i < 15; $i++) {
         $role = $faker->jobTitle();
         $artist_id = $faker->numberBetween(1, 10);
@@ -98,7 +146,7 @@ try {
     }
     echo "Activities added successfully.\n";
 
-    // 8. Fill Subscribers
+    // 10. Fill Subscribers
     for ($i = 0; $i < 10; $i++) {
         $first_name = $faker->firstName();
         $last_name = $faker->lastName();
@@ -106,28 +154,15 @@ try {
         $username = $faker->unique()->userName();
         $password = password_hash($faker->password(), PASSWORD_BCRYPT);
         $birthdate = $faker->date('Y-m-d', '-18 years');
-        $conn->prepare("INSERT INTO spectacles_subscriber (first_name, last_name, email, username, password, birthdate) 
-                        VALUES (?, ?, ?, ?, ?, ?)")
-             ->execute([$first_name, $last_name, $email, $username, $password, $birthdate]);
+        $role_id = 2; // Assign all other subscribers as regular users
+
+        $conn->prepare("INSERT INTO spectacles_subscriber (first_name, last_name, email, username, password, birthdate, role_id) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?)")
+             ->execute([$first_name, $last_name, $email, $username, $password, $birthdate, $role_id]);
     }
     echo "Subscribers added successfully.\n";
 
-    // 9. Fill Schedules
-    for ($i = 0; $i < 20; $i++) {
-        $day = $faker->dateTimeBetween('-1 month', '+1 month')->format('Y-m-d H:i:s');
-        $booked = $faker->numberBetween(0, 1);
-        $paid = $faker->numberBetween(0, 1);
-        $amount = $faker->randomFloat(2, 10, 100);
-        $spectacle_id = $faker->numberBetween(1, 10);
-        $subscriber_id = $faker->numberBetween(1, 10);
-        $reactions = json_encode($faker->randomElements(['like', 'dislike', 'surprised', 'dubious'], $faker->numberBetween(1, 4)));
-        $conn->prepare("INSERT INTO spectacles_schedule (day, booked, paid, amount, spectacle_id, subscriber_id, reactions) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?)")
-             ->execute([$day, $booked, $paid, $amount, $spectacle_id, $subscriber_id, $reactions]);
-    }
-    echo "Schedules added successfully.\n";
-
-    // 10. Fill Reviews
+    // 11. Fill Reviews
     for ($i = 0; $i < 15; $i++) {
         $spectacle_id = $faker->numberBetween(1, 10);
         $subscriber_id = $faker->numberBetween(1, 10);

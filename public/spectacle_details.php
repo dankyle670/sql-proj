@@ -6,7 +6,7 @@ require_once __DIR__ . '/../src/Controllers/ReviewController.php';
 use Controllers\SpectacleController;
 use Controllers\ReviewController;
 
-// Vérifier si l'ID est passé en paramètre dans l'URL
+// Validate and fetch the spectacle ID from the URL
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id = $_GET['id'];
 } else {
@@ -14,11 +14,11 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     exit;
 }
 
-// Initialisation des contrôleurs
+// Initialize controllers
 $spectacleController = new SpectacleController();
 $reviewController = new ReviewController();
 
-// Récupérer les détails du spectacle
+// Fetch spectacle details
 $spectacleDetails = $spectacleController->getSpectacleById($id);
 
 if (!$spectacleDetails) {
@@ -26,8 +26,8 @@ if (!$spectacleDetails) {
     exit;
 }
 
-// Récupérer les avis pour ce spectacle (limiter à 5 derniers avis)
-$reviewsResult = $reviewController->getReviews($id);
+// Fetch reviews for the spectacle
+$reviewsResult = $reviewController->getReviewsBySpectacleId($id);
 ?>
 
 <!DOCTYPE html>
@@ -42,53 +42,44 @@ $reviewsResult = $reviewController->getReviews($id);
 
 <body>
     <header>
-        <h1>Détails du spectacle: <?= htmlspecialchars($spectacleDetails['title']) ?></h1>
+        <h1>Détails du spectacle: <?= htmlspecialchars($spectacleDetails['title'] ?? 'Non spécifié') ?></h1>
     </header>
 
     <div class="spectacle-details">
-        <p><strong>Titre :</strong> <?= htmlspecialchars($spectacleDetails['title']) ?></p>
-        <p><strong>Date :</strong> <?= htmlspecialchars($spectacleDetails['date']) ?></p>
-        <p><strong>Description :</strong> <?= nl2br(htmlspecialchars($spectacleDetails['description'])) ?></p>
-        <p><strong>Lieu :</strong> <?= htmlspecialchars($spectacleDetails['location']) ?></p>
-        <p><strong>Durée :</strong> <?= htmlspecialchars($spectacleDetails['duration']) ?> minutes</p>
-        <p><strong>Prix :</strong> <?= htmlspecialchars($spectacleDetails['price']) ?> €</p>
-        <p><strong>Type :</strong> <?= htmlspecialchars($spectacleDetails['type']) ?></p>
+        <p><strong>Titre :</strong> <?= htmlspecialchars($spectacleDetails['title'] ?? 'Non spécifié') ?></p>
+        <p><strong>Date :</strong> <?= htmlspecialchars($spectacleDetails['date'] ?? 'Non spécifiée') ?></p>
+        <p><strong>Description :</strong> <?= nl2br(htmlspecialchars($spectacleDetails['description'] ?? 'Non spécifiée')) ?></p>
+        <p><strong>Lieu :</strong> <?= htmlspecialchars($spectacleDetails['location'] ?? 'Non spécifié') ?></p>
+        <p><strong>Durée :</strong> <?= htmlspecialchars($spectacleDetails['duration'] ?? 'Non spécifiée') ?> minutes</p>
+        <p><strong>Prix :</strong> <?= htmlspecialchars($spectacleDetails['price'] ?? 'Non spécifié') ?> €</p>
+        <p><strong>Type :</strong> <?= htmlspecialchars($spectacleDetails['type'] ?? 'Non spécifié') ?></p>
         <a href="reservation.php?id=<?= htmlspecialchars($id) ?>" class="btn-details">Réservez</a>
-        <!-- Lien retour à la liste des spectacles -->
         <a href="home.php" class="btn-back">Retour à la liste</a>
     </div>
 
-<!-- Section des avis -->
-<div class="review-section">
-    <h2>Avis récents</h2>
-
-    <?php if ($reviewsResult['success']): ?>
-        <!-- Afficher les 3 derniers avis -->
-        <?php $recentReviews = array_slice($reviewsResult['data'], 0, 3); ?>
-        <div class="reviews">
-            <?php foreach ($recentReviews as $review): ?>
-                <div class="review">
-                    <p><strong><?= htmlspecialchars($review['subscriber_name']); ?></strong> - <?= htmlspecialchars($review['created_at']); ?></p>
-                    <p class="rating">Note: <?= str_repeat('⭐', $review['rating']); ?></p>
-                    <p><?= nl2br(htmlspecialchars($review['comment'])); ?></p>
-                </div>
-            <?php endforeach; ?>
+    <!-- Review Section -->
+    <div class="review-section">
+        <h2>Avis récents</h2>
+        <?php if ($reviewsResult['success']): ?>
+            <div class="reviews">
+                <?php foreach (array_slice($reviewsResult['data'], 0, 3) as $review): ?>
+                    <div class="review">
+                        <p><strong><?= htmlspecialchars($review['subscriber_name'] ?? 'Anonyme'); ?></strong> - <?= htmlspecialchars($review['created_at']); ?></p>
+                        <p class="rating">Note: <?= str_repeat('⭐', $review['rating']); ?></p>
+                        <p><?= nl2br(htmlspecialchars($review['comment'] ?? '')); ?></p>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <div class="see-all-reviews">
+                <a href="all_reviews.php?spectacle_id=<?= $id ?>" class="btn-show-all">Voir tous les avis</a>
+            </div>
+        <?php else: ?>
+            <p>Aucun avis disponible pour ce spectacle.</p>
+        <?php endif; ?>
+        <div class="add-review-btn">
+            <a href="add_review.php?spectacle_id=<?= $id ?>" class="btn-add-review">Ajouter un avis</a>
         </div>
-
-        <!-- Bouton pour voir tous les avis -->
-        <div class="see-all-reviews">
-            <a href="all_reviews.php?spectacle_id=<?= $id ?>" class="btn-show-all">Voir tous les avis</a>
-        </div>
-    <?php else: ?>
-        <p>Aucun avis disponible pour ce spectacle.</p>
-    <?php endif; ?>
-
-    <!-- Bouton pour ajouter un avis -->
-    <div class="add-review-btn">
-        <a href="add_review.php?spectacle_id=<?= $id ?>" class="btn-add-review">Ajouter un avis</a>
     </div>
-</div>
-
 </body>
 
 </html>
