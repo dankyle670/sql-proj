@@ -67,4 +67,3 @@ class ReviewController
         return ['success' => true];
     }
 }
-
