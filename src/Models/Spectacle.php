@@ -21,7 +21,7 @@ class Spectacle
     public function getAllSpectacles()
     {
         try {
-            $sql = "SELECT * FROM spectacles_spectacle LIMIT 6";
+            $sql = "SELECT id, title, synopsis FROM spectacles_spectacle LIMIT 6";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -80,10 +80,15 @@ class Spectacle
     public function getUpcomingSpectacles()
     {
         try {
-            $query = "SELECT * FROM spectacles_schedule WHERE day > NOW() ORDER BY day ASC LIMIT 4";
-            $stmt = $this->conn->prepare($query);
+            $sql = "
+                SELECT s.id, s.title, s.synopsis, ss.day AS date
+                FROM spectacles_spectacle s
+                JOIN spectacles_schedule ss ON s.id = ss.spectacle_id
+                WHERE ss.day > NOW()
+                ORDER BY ss.day ASC
+                LIMIT 4";
+            $stmt = $this->conn->prepare($sql);
             $stmt->execute();
-
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error fetching upcoming spectacles: " . $e->getMessage());
@@ -97,13 +102,9 @@ class Spectacle
     public function getSuggestions($query)
     {
         try {
-            // Log de la requête avant exécution
-            error_log("SQL pour suggestions : SELECT id, title FROM spectacles_spectacle WHERE title LIKE '%$query%' LIMIT 10");
-
             $sql = "SELECT id, title FROM spectacles_spectacle WHERE title LIKE ? LIMIT 10";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute(['%' . $query . '%']);
-
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error fetching suggestions: " . $e->getMessage());
@@ -111,22 +112,35 @@ class Spectacle
         }
     }
 
+    //mod get spectaclebyid
+
     public function getSpectacleById($spectacleId)
     {
-        try {
-            $sql = "SELECT * FROM spectacles_spectacle WHERE id = :spectacleId";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':spectacleId', $spectacleId, PDO::PARAM_INT);
-            $stmt->execute();
-
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error fetching spectacle by ID: " . $e->getMessage());
-            return false;
-        }
+        $sql = "
+            SELECT
+                s.id,
+                s.title,
+                s.synopsis AS description,
+                s.duration,
+                s.price,
+                ss.day AS date,
+                t.address AS location,
+                c.name AS category
+            FROM spectacles_spectacle s
+            LEFT JOIN spectacles_schedule ss ON s.id = ss.spectacle_id
+            LEFT JOIN spectacles_room r ON r.id = ss.id
+            LEFT JOIN spectacles_theatre t ON r.theatre_id = t.id
+            LEFT JOIN spectacles_category c ON s.category_id = c.id
+            WHERE s.id = :spectacleId
+            LIMIT 1";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':spectacleId', $spectacleId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    
+
+
     public function getAvailableSeats($spectacleId, $scheduleId)
     {
         try {

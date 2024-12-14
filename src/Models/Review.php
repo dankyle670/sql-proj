@@ -15,7 +15,9 @@ class Review
         $this->conn = $db->getConnection();
     }
 
-    // Add a new review
+
+    //Add a new review
+
     public function addReview($spectacleId, $subscriberId, $comment, $rating)
     {
         try {
@@ -28,14 +30,17 @@ class Review
         }
     }
 
-    // Get all reviews for a spectacle
-    public function getReviewsBySpectacle($spectacleId)
+
+    //Get all reviews for a specific spectacle
+
+    public function getReviewsBySpectacleId($spectacleId)
     {
         try {
-            $sql = "SELECT r.comment, r.rating, s.username AS subscriber_name, r.created_at 
+            $sql = "SELECT r.comment, r.rating, CONCAT(s.first_name, ' ', s.last_name) AS subscriber_name, r.created_at 
                     FROM reviews r
                     JOIN spectacles_subscriber s ON r.subscriber_id = s.id
-                    WHERE r.spectacle_id = ?";
+                    WHERE r.spectacle_id = ?
+                    ORDER BY r.created_at DESC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$spectacleId]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -45,7 +50,7 @@ class Review
         }
     }
 
-    // Delete a review
+    //Delete a review
     public function deleteReview($reviewId)
     {
         try {

@@ -1,7 +1,5 @@
 <?php
-// Modèle pour représenter un utilisateur
-// - Méthodes : création, mise à jour, suppression, authentification.
-// Responsable : AS DK
+
 namespace Models;
 
 use PDO;
@@ -17,10 +15,11 @@ class User
         $this->conn = $db->getConnection();
     }
 
+    // Create a new user
     public function createUser($data)
     {
-        $sql = "INSERT INTO spectacles_subscriber (first_name, last_name, username, email, password, birthdate) 
-                VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO spectacles_subscriber (first_name, last_name, username, email, password, birthdate, role) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
         return $stmt->execute([
             $data['first_name'],
@@ -28,11 +27,12 @@ class User
             $data['username'],
             $data['email'],
             $data['password'],
-            $data['birthdate']
+            $data['birthdate'],
+            $data['role'] // Insert role (e.g., Admin or Subscriber)
         ]);
     }
 
-    // 2. Get a user by email
+    // Get a user by email
     public function getUserByEmail($email)
     {
         $sql = "SELECT * FROM spectacles_subscriber WHERE email = ?";
@@ -41,7 +41,7 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // 3. Get a user by ID
+    // Get a user by ID
     public function getUserById($userId)
     {
         $sql = "SELECT * FROM spectacles_subscriber WHERE id = ?";
@@ -50,7 +50,7 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // 4. Update a user's information
+    // Update a user's information
     public function updateUser($userId, $data)
     {
         $fields = [];
@@ -67,6 +67,3 @@ class User
         return $stmt->execute($values);
     }
 }
-
-?>
-

@@ -94,9 +94,12 @@ if (!$profile) {
     <div class="container">
         <h1>User Profile</h1>
 
+        <!-- Back to Home Button -->
+        <a href="home.php" class="btn-back-home">Retour à l'accueil</a>
+
         <!-- Logout Button -->
         <form method="POST" action="profile.php" class="logout-form">
-            <button type="submit" name="logout" class="logout-button">Logout</button>
+            <button type="submit" name="logout" class="logout-button">Déconnexion</button>
         </form>
 
         <?php

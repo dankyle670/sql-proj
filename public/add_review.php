@@ -4,34 +4,39 @@ require_once '../vendor/autoload.php';
 
 use Controllers\ReviewController;
 
-// Initialiser le contrôleur ReviewController
+// Initialize the ReviewController
 $reviewController = new ReviewController();
 
-// Récupérer l'ID du spectacle depuis l'URL
-$spectacleId = $_GET['spectacle_id'] ?? 1;  // Remplace 1 par une valeur dynamique si nécessaire
+// Validate and fetch the spectacle ID from the URL
+if (isset($_GET['spectacle_id']) && is_numeric($_GET['spectacle_id'])) {
+    $spectacleId = $_GET['spectacle_id'];
+} else {
+    echo "ID du spectacle invalide.";
+    exit;
+}
 
-// Gérer la soumission du formulaire
+// Handle form submission
+$message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Simuler les valeurs de subscriber_id et spectacle_id
-    $subscriberId = $_POST['subscriber_id'] ?? 1; // Remplace par les données de session ou dynamique en production
+    // Simulate subscriber ID (replace with session data in production)
+    $subscriberId = $_POST['subscriber_id'] ?? 1;
 
-    // Collecter et valider les données du formulaire
+    // Collect and validate form data
     $data = [
         'spectacle_id' => $spectacleId,
         'subscriber_id' => $subscriberId,
         'comment' => trim($_POST['commentaire'] ?? ''),
-        'rating' => (int)($_POST['NOTE'] ?? 0)
+        'rating' => (int)($_POST['rating'] ?? 0),
     ];
 
-    // Tenter d'ajouter l'avis
+    // Attempt to add the review
     $result = $reviewController->addReview($data);
     if ($result['success']) {
-        echo "<p style='color:green;'>Merci pour votre avis !</p>";
-        // Rediriger vers la page des détails du spectacle
+        $message = "<p class='success-message'>Merci pour votre avis !</p>";
         header('Location: spectacle_details.php?id=' . $spectacleId);
         exit;
     } else {
-        echo "<p style='color:red;'>Erreur : " . htmlspecialchars($result['message']) . "</p>";
+        $message = "<p class='error-message'>Erreur : " . htmlspecialchars($result['message']) . "</p>";
     }
 }
 
@@ -39,30 +44,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter un avis</title>
+    <link rel="stylesheet" href="add_review.css">
 </head>
+
 <body>
-    <h1>Ajouter un avis</h1>
-    <form method="POST" action="add_review.php?spectacle_id=<?= htmlspecialchars($spectacleId) ?>">
-        <!-- Champ caché pour l'ID du spectacle -->
-        <input type="hidden" name="spectacle_id" value="<?= $spectacleId ?>">
+    <header>
+        <h1>Ajouter un avis</h1>
+    </header>
 
-        <label for="commentaire">Commentaire :</label><br>
-        <textarea name="commentaire" id="commentaire" rows="5" cols="40" required></textarea><br><br>
+    <div class="review-form-container">
+        <?= $message ?>
+        <form method="POST" action="add_review.php?spectacle_id=<?= htmlspecialchars($spectacleId) ?>">
+            <!-- Hidden field for the spectacle ID -->
+            <input type="hidden" name="spectacle_id" value="<?= htmlspecialchars($spectacleId) ?>">
+            <input type="hidden" name="subscriber_id" value="1"> <!-- Replace with dynamic session data -->
 
-        <label for="NOTE">Note :</label><br>
-        <select name="NOTE" id="NOTE" required>
-            <option value="1">1 - Médiocre</option>
-            <option value="2">2 - Passable</option>
-            <option value="3">3 - Bon</option>
-            <option value="4">4 - Très bon</option>
-            <option value="5">5 - Excellent</option>
-        </select><br><br>
+            <label for="commentaire">Commentaire :</label><br>
+            <textarea name="commentaire" id="commentaire" rows="5" cols="40" required></textarea><br><br>
 
-        <button type="submit">Envoyer</button>
-    </form>
+            <label for="rating">Note :</label><br>
+            <select name="rating" id="rating" required>
+                <option value="1">1 - Médiocre</option>
+                <option value="2">2 - Passable</option>
+                <option value="3">3 - Bon</option>
+                <option value="4">4 - Très bon</option>
+                <option value="5">5 - Excellent</option>
+            </select><br><br>
+
+            <button type="submit" class="submit-btn">Envoyer</button>
+        </form>
+        <a href="spectacle_details.php?id=<?= htmlspecialchars($spectacleId) ?>" class="btn-back">Retour au spectacle</a>
+    </div>
 </body>
+
 </html>

@@ -15,8 +15,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 $reservationController = new ReservationController();
 
 // Obtenir les places disponibles
-$availableSeats = $reservationController->getAvailableSeats($spectacleId, null); // Pas besoin de schedule_id ici
-
+$availableSeats = $reservationController->getAvailableSeats($spectacleId, null);
 ?>
 
 <!DOCTYPE html>
