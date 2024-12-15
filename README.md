@@ -67,12 +67,17 @@ Avant de commencer, assurez-vous d'avoir installé :
 5. Remplissez la base de données avec des données fictives:
         **php src/Config/fill_database.php**
 
+
 6. Connectez-vous à MySQL et exécutez les requêtes suivantes pour ajouter la colonne 'image' et la remplir avec des données:
 ```sql
 ALTER TABLE spectacles_spectacle ADD COLUMN image VARCHAR(255);
 
 UPDATE spectacles_spectacle
 SET image = CONCAT('https://books.google.com/books/content?id=', id, '&printsec=frontcover&img=1&zoom=1');
+
+7. Enfin lancez le server avec la commande:
+        **php -S localhost:8000 -t public**
+
 
 
 **project-folder**
