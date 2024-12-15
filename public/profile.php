@@ -4,6 +4,7 @@ require_once '../vendor/autoload.php';
 
 use Controllers\ProfileController;
 use Controllers\UserController;
+use Controllers\ReservationController;
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -12,6 +13,7 @@ if (session_status() == PHP_SESSION_NONE) {
 // Initialize controllers
 $profileController = new ProfileController();
 $userController = new UserController();
+$reservationController = new ReservationController();
 
 // Restrict access to authenticated users
 if (!$userController->isAuthenticated()) {
@@ -80,6 +82,8 @@ if (!$profile) {
     exit();
 }
 
+// Fetch user's reservations
+$reservations = $reservationController->getUserReservations($subscriberId);
 ?>
 
 <!DOCTYPE html>
@@ -117,25 +121,24 @@ if (!$profile) {
             <input type="hidden" name="update_profile" value="1">
 
             <label for="first_name">First Name:</label>
-            <input type="text" id="first_name" name="first_name" value="<?php echo htmlspecialchars($profile['first_name']); ?>" required>
+            <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($profile['first_name']); ?>" required>
 
             <label for="last_name">Last Name:</label>
-            <input type="text" id="last_name" name="last_name" value="<?php echo htmlspecialchars($profile['last_name']); ?>" required>
+            <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($profile['last_name']); ?>" required>
 
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($profile['email']); ?>" required>
+            <input type="email" id="email" name="email" value="<?= htmlspecialchars($profile['email']); ?>" required>
 
             <label for="username">Username:</label>
-            <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($profile['username']); ?>" required>
+            <input type="text" id="username" name="username" value="<?= htmlspecialchars($profile['username']); ?>" required>
 
             <label for="birthdate">Birthdate:</label>
-            <input type="date" id="birthdate" name="birthdate" value="<?php echo htmlspecialchars($profile['birthdate']); ?>">
+            <input type="date" id="birthdate" name="birthdate" value="<?= htmlspecialchars($profile['birthdate']); ?>">
 
             <button type="submit">Update Profile</button>
         </form>
 
         <h2>Change Password</h2>
-        <!-- Password Change Form -->
         <form method="POST" action="profile.php">
             <input type="hidden" name="change_password" value="1">
 
@@ -150,6 +153,21 @@ if (!$profile) {
 
             <button type="submit">Change Password</button>
         </form>
+
+        <h2>My Reservations</h2>
+        <?php if (!empty($reservations['data'])): ?>
+            <ul>
+                <?php foreach ($reservations['data'] as $reservation): ?>
+                    <li>
+                        <strong>Spectacle:</strong> <?= htmlspecialchars($reservation['title']); ?><br>
+                        <strong>Date:</strong> <?= htmlspecialchars($reservation['day']); ?><br>
+                        <strong>Statut:</strong> <?= $reservation['booked'] ? 'Réservée' : 'Disponible'; ?><br>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php else: ?>
+            <p class="error-message">Aucune réservation trouvée.</p>
+        <?php endif; ?>
     </div>
 </body>
 </html>
