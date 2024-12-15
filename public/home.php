@@ -45,17 +45,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 // Get spectacles based on filters
 $searchResults = $spectacleController->searchSpectacles($filters);
 $upcomingSpectacles = $spectacleController->getUpcomingSpectacles();
-$spectacles = $spectacleController->getAllSpectacles();
+
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page d'accueil</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <!-- Header -->
     <header>
@@ -97,9 +99,10 @@ $spectacles = $spectacleController->getAllSpectacles();
                 <div class="spectacles-grid">
                     <?php foreach ($upcomingSpectacles['data'] as $spectacle): ?>
                         <div class="spectacle-card">
-                            <h2><?= htmlspecialchars($spectacle['title']) ?></h2>
+                            <img src="<?= htmlspecialchars($spectacle['image'] ?? '/placeholder.svg?height=200&width=300') ?>" alt="<?= htmlspecialchars($spectacle['title']) ?>" class="spectacle-image" >
+                            <h3><?= htmlspecialchars($spectacle['title']) ?></h3>
                             <p><strong>Date :</strong> <?= htmlspecialchars($spectacle['date']) ?></p>
-                            <p><strong>Description :</strong> <?= htmlspecialchars($spectacle['synopsis'] ?? 'Non spécifié') ?></p>
+                            <p class="spectacle-synopsis"><strong>Description :</strong> <?= htmlspecialchars($spectacle['synopsis'] ?? 'Non spécifié') ?></p>
                             <a href="spectacle_details.php?id=<?= htmlspecialchars($spectacle['id']) ?>" class="btn-details">Voir Détails</a>
                         </div>
                     <?php endforeach; ?>
@@ -151,13 +154,6 @@ $spectacles = $spectacleController->getAllSpectacles();
                 .join('');
         }
 
-        function selectSuggestion(id) {
-            selectedId = id; 
-            searchInput.value = ''; 
-            suggestionsList.innerHTML = ''; 
-            window.location.href = `spectacle_details.php?id=${id}`;
-        }
-
         searchForm.addEventListener("submit", (e) => {
             e.preventDefault();
             if (selectedId) {
@@ -165,6 +161,12 @@ $spectacles = $spectacleController->getAllSpectacles();
             }
         });
 
+        function selectSuggestion(id) {
+            selectedId = id;
+            searchInput.value = '';
+            suggestionsList.innerHTML = '';
+            window.location.href = `spectacle_details.php?id=${id}`;
+        }
     </script>
 
 </body>

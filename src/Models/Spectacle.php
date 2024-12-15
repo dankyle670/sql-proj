@@ -21,7 +21,7 @@ class Spectacle
     public function getAllSpectacles()
     {
         try {
-            $sql = "SELECT id, title, synopsis FROM spectacles_spectacle LIMIT 6";
+            $sql = "SELECT id, title, synopsis, image FROM spectacles_spectacle"; 
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -37,7 +37,7 @@ class Spectacle
     public function searchSpectacles($filters)
     {
         try {
-            $sql = "SELECT * FROM spectacles_spectacle WHERE 1=1"; // On commence avec une condition qui est toujours vraie
+            $sql = "SELECT * FROM spectacles_spectacle WHERE 1=1"; 
             $params = [];
 
             // Log de la requête SQL avant l'exécution
@@ -81,7 +81,7 @@ class Spectacle
     {
         try {
             $sql = "
-                SELECT s.id, s.title, s.synopsis, ss.day AS date
+                SELECT s.id, s.title, s.synopsis, ss.day AS date, s.image 
                 FROM spectacles_spectacle s
                 JOIN spectacles_schedule ss ON s.id = ss.spectacle_id
                 WHERE ss.day > NOW()
@@ -89,12 +89,13 @@ class Spectacle
                 LIMIT 4";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC); 
         } catch (PDOException $e) {
             error_log("Error fetching upcoming spectacles: " . $e->getMessage());
             return false;
         }
     }
+    
 
     /**
      * Récupérer les suggestions de spectacles
@@ -196,5 +197,3 @@ class Spectacle
         }
     }
 }
-
-

@@ -32,16 +32,16 @@ class SpectacleController
      */
     public function searchSpectacles($filters)
     {
-        // Log des filtres reçus pour le débogage
+        
         error_log("Filtres reçus : " . print_r($filters, true));
 
-        // Appeler le modèle pour récupérer les spectacles filtrés
+        
         $result = $this->spectacleModel->searchSpectacles($filters);
 
-        // Log des résultats
+        
         error_log("Résultats de la recherche : " . print_r($result, true));
 
-        // Retourner les résultats ou un message d'erreur
+        
         if ($result) {
             return ['success' => true, 'data' => $result];
         }
@@ -68,13 +68,13 @@ class SpectacleController
      */
     public function getSuggestions($query)
     {
-        // Log de la requête de suggestions
+        
         error_log("Recherche de suggestions pour : " . $query);
 
-        // Appeler le modèle pour récupérer les suggestions
+        
         $result = $this->spectacleModel->getSuggestions($query);
 
-        // Log des résultats des suggestions
+        
         error_log("Suggestions trouvées : " . print_r($result, true));
 
         if ($result) {

@@ -29,7 +29,7 @@ try {
 
         if (!$exists) {
             $conn->prepare("INSERT INTO roles (name, description) VALUES (?, ?)")
-                 ->execute([$role['name'], $role['description']]);
+                ->execute([$role['name'], $role['description']]);
         }
     }
     echo "Roles added successfully.\n";
@@ -49,15 +49,15 @@ try {
         // Insert the Admin user
         $conn->prepare("INSERT INTO spectacles_subscriber (first_name, last_name, email, username, password, birthdate, role_id) 
                         VALUES (?, ?, ?, ?, ?, ?, ?)")
-             ->execute([
-                 'Admin',
-                 'User',
-                 'admin@example.com',
-                 'admin',
-                 $adminPassword,
-                 '1990-01-01',
-                 $adminRoleId
-             ]);
+            ->execute([
+                'Admin',
+                'User',
+                'admin@example.com',
+                'admin',
+                $adminPassword,
+                '1990-01-01',
+                $adminRoleId
+            ]);
         echo "Admin account created successfully.\n";
     } else {
         echo "Admin account already exists.\n";
@@ -68,7 +68,7 @@ try {
         $name = $faker->word();
         $help_text = $faker->sentence();
         $conn->prepare("INSERT INTO spectacles_category (name, help_text) VALUES (?, ?)")
-             ->execute([$name, $help_text]);
+            ->execute([$name, $help_text]);
     }
     echo "Categories added successfully.\n";
 
@@ -96,7 +96,7 @@ try {
         $gauge = $faker->numberBetween(50, 200);
         $theatre_id = $faker->numberBetween(1, 3);
         $conn->prepare("INSERT INTO spectacles_room (name, gauge, theatre_id) VALUES (?, ?, ?)")
-             ->execute([$name, $gauge, $theatre_id]);
+            ->execute([$name, $gauge, $theatre_id]);
     }
     echo "Rooms added successfully.\n";
 
@@ -104,13 +104,13 @@ try {
     for ($i = 0; $i < 10; $i++) {
         $title = $faker->sentence(3);
         $synopsis = $faker->text(200);
-        $duration = $faker->time('H:i:s');
+        $duration = $faker->numberBetween(60, 180); // Duration in minutes
         $price = $faker->randomFloat(2, 10, 100);
         $category_id = $faker->numberBetween(1, 5);
         $language = $faker->randomElement(['français', 'autre']);
         $conn->prepare("INSERT INTO spectacles_spectacle (title, synopsis, duration, price, category_id, language) 
-                        VALUES (?, ?, ?, ?, ?, ?)")
-             ->execute([$title, $synopsis, $duration, $price, $category_id, $language]);
+                    VALUES (?, ?, ?, ?, ?, ?)")
+            ->execute([$title, $synopsis, $duration, $price, $category_id, $language]);
     }
     echo "Spectacles added successfully.\n";
 
@@ -122,7 +122,7 @@ try {
         $last_date = $faker->dateTimeBetween($first_date, '+1 month')->format('Y-m-d H:i:s');
         $conn->prepare("INSERT INTO spectacles_performance (spectacle_id, room_id, first_date, last_date) 
                         VALUES (?, ?, ?, ?)")
-             ->execute([$spectacle_id, $room_id, $first_date, $last_date]);
+            ->execute([$spectacle_id, $room_id, $first_date, $last_date]);
     }
     echo "Performances added successfully.\n";
 
@@ -132,7 +132,7 @@ try {
         $last_name = $faker->lastName();
         $biography = $faker->paragraph();
         $conn->prepare("INSERT INTO spectacles_artist (first_name, last_name, biography) VALUES (?, ?, ?)")
-             ->execute([$first_name, $last_name, $biography]);
+            ->execute([$first_name, $last_name, $biography]);
     }
     echo "Artists added successfully.\n";
 
@@ -142,7 +142,7 @@ try {
         $artist_id = $faker->numberBetween(1, 10);
         $spectacle_id = $faker->numberBetween(1, 10);
         $conn->prepare("INSERT INTO spectacles_activity (role, artist_id, spectacle_id) VALUES (?, ?, ?)")
-             ->execute([$role, $artist_id, $spectacle_id]);
+            ->execute([$role, $artist_id, $spectacle_id]);
     }
     echo "Activities added successfully.\n";
 
@@ -158,7 +158,7 @@ try {
 
         $conn->prepare("INSERT INTO spectacles_subscriber (first_name, last_name, email, username, password, birthdate, role_id) 
                         VALUES (?, ?, ?, ?, ?, ?, ?)")
-             ->execute([$first_name, $last_name, $email, $username, $password, $birthdate, $role_id]);
+            ->execute([$first_name, $last_name, $email, $username, $password, $birthdate, $role_id]);
     }
     echo "Subscribers added successfully.\n";
 
@@ -170,10 +170,9 @@ try {
         $rating = $faker->numberBetween(1, 5);
         $conn->prepare("INSERT INTO reviews (spectacle_id, subscriber_id, comment, rating) 
                         VALUES (?, ?, ?, ?)")
-             ->execute([$spectacle_id, $subscriber_id, $comment, $rating]);
+            ->execute([$spectacle_id, $subscriber_id, $comment, $rating]);
     }
     echo "Reviews added successfully.\n";
-
 } catch (\Exception $e) {
     echo "Error: " . $e->getMessage();
 }

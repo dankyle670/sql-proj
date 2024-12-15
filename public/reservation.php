@@ -24,51 +24,26 @@ $availableSeats = $reservationController->getAvailableSeats($spectacleId, null);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Réservation</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        li {
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        a {
-            color: #007BFF;
-            text-decoration: none;
-        }
-        .error {
-            color: red;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="reservation.css">
 </head>
 <body>
+    <div class="container">
+        <h1>Réservation pour le Spectacle</h1>
 
-    <h1>Réservation pour le Spectacle</h1>
-
-    <?php if ($availableSeats['success']): ?>
-        <h2>Places disponibles</h2>
-        <p>Nombre de places disponibles : <?= count($availableSeats['data']) ?></p>
-        <ul>
-            <?php foreach ($availableSeats['data'] as $seat): ?>
-                <li>
-                    Place n°<?= htmlspecialchars(is_array($seat) ? $seat['seat_number'] : $seat) ?>
-                    <a href="reserve.php?id=<?= $spectacleId ?>&seat_id=<?= htmlspecialchars(is_array($seat) ? $seat['id'] : $seat) ?>">Réserver</a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    <?php else: ?>
-        <p class="error"><?= htmlspecialchars($availableSeats['message']) ?></p>
-    <?php endif; ?>
+        <?php if ($availableSeats['success']): ?>
+            <h2>Places disponibles</h2>
+            <p>Nombre de places disponibles : <?= count($availableSeats['data']) ?></p>
+            <ul>
+                <?php foreach ($availableSeats['data'] as $seat): ?>
+                    <li>
+                        <span>Place n°<?= htmlspecialchars(is_array($seat) ? $seat['seat_number'] : $seat) ?></span>
+                        <a href="reserve.php?id=<?= $spectacleId ?>&seat_id=<?= htmlspecialchars(is_array($seat) ? $seat['id'] : $seat) ?>">Réserver</a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php else: ?>
+            <p class="error"><?= htmlspecialchars($availableSeats['message']) ?></p>
+        <?php endif; ?>
+    </div>
 </body>
 </html>
