@@ -47,7 +47,7 @@ Avant de commencer, assurez-vous d'avoir installé :
 ### Étapes d'Installation
 
 1. Clonez le dépôt:
-   git clone https://github.com/your-repository-url.git
+   git clone https://github.com/dankyle670/sql-proj.git
 
 2. Accédez au répertoire du projet:
     cd your-project-folder
@@ -67,17 +67,38 @@ Avant de commencer, assurez-vous d'avoir installé :
 5. Remplissez la base de données avec des données fictives:
         **php src/Config/fill_database.php**
 
+6. Connectez-vous à MySQL et exécutez les requêtes suivantes pour ajouter la colonne 'image' et la remplir avec des données:
+```sql
+ALTER TABLE spectacles_spectacle ADD COLUMN image VARCHAR(255);
+
+UPDATE spectacles_spectacle
+SET image = CONCAT('https://books.google.com/books/content?id=', id, '&printsec=frontcover&img=1&zoom=1');
+
+
 **project-folder**
 
 
 ├── composer.json          **Gestion des dépendances**
 ├── public                 **Fichiers accessibles publiquement**
 │   ├── add_review.php     **Page d'ajout d'avis**
+│   ├── add_review.css     **Page d'ajout d'avis**
+│   ├── all_review.php     **Voir tous les avis**
+│   ├── all_review.css     **css**
+│   ├── get_suggestions.php** Gérer lessuggestion**
+│   ├── Home.php           **Page d'acceuil**
+│   ├── login.css           **css**
+│   ├── login.php           **Vue**
+│   ├── profile.css           **css**
+│   ├── profile.php        **Gestion du profil utilisateur**
+│   ├── reservation.css           **css**
+│   ├── reservation.php    **Page de réservation**
+│   ├── signup.css           **css**
+│   ├── signup.php           **Vue**
 │   ├── create_tables.php  **Script de création des tables**
 │   ├── index.php          **Point d'entrée principal**
-│   ├── profile.php        **Gestion du profil utilisateur**
-│   ├── reservation.php    **Page de réservation**
 │   ├── spectacle_details.php **Page des détails d'un spectacle**
+│   ├── spectacle_details.css **Page des détails d'un spectacle**
+│   ├── style.css **style génerale**
 ├── src
 │   ├── Config             **Fichiers de configuration**
 │   │   ├── config.php     **Informations de connexion MySQL**
@@ -85,11 +106,16 @@ Avant de commencer, assurez-vous d'avoir installé :
 │   │   ├── fill_database.php **Script de remplissage de données fictives**
 │   │   └── TableCreator.php **Création des tables**
 │   ├── Controllers        **Logique applicative**
-│   │   ├── UserController.php
+│   │   ├── ProfileController.php
+│   │   ├── ReservationCopntroller
 │   │   ├── ReviewController.php
+│   │   ├── spectacleController.php
+│   │   ├── UserController.php
 │   ├── Models             **Représentation des données**
+│   │   ├── Reservation.php     **Modèle pour les Reservation**
+│   │   ├── Review.php     **Modèle pour les review**
+│   │   ├── Spectacle.php     **Modèle pour les Spectacle**
 │   │   ├── User.php       **Modèle utilisateur**
-│   │   ├── Review.php     **Modèle pour les avis**
 │   ├── Services           **Services utilitaires (authentification, etc.)**
 │   ├── Views              **(Optionnel) Fichiers de vues**
 ├── tests                  **Tests unitaires et fonctionnels**
@@ -99,8 +125,8 @@ Avant de commencer, assurez-vous d'avoir installé :
 **Contributeurs**
 
 
-AS :
-KI :
-YE :
-LT :
-DK :
+AS : Amadou Samake
+KI : Kilian Izatoola
+YE : Yvann Ehoura
+LT : Ousmane Sacko
+DK : Daniele Kouamé

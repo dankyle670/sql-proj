@@ -48,13 +48,13 @@ class TableCreator
                 FOREIGN KEY (theatre_id) REFERENCES spectacles_theatre(id)
             );
 
-          -- Création de la table spectacles_spectacle
+            -- Create spectacles_spectacle table
             CREATE TABLE IF NOT EXISTS spectacles_spectacle (
                 id INT(11) AUTO_INCREMENT PRIMARY KEY,
                 title VARCHAR(255) NOT NULL,
                 synopsis TEXT,
-                duration INT,
-                price DECIMAL(10, 2),
+                duration TIME,
+                price FLOAT,
                 category_id INT(11),
                 language ENUM('français', 'autre'),
                 FOREIGN KEY (category_id) REFERENCES spectacles_category(id)
@@ -98,7 +98,7 @@ class TableCreator
                 username VARCHAR(48) NOT NULL UNIQUE,
                 password VARCHAR(128) NOT NULL,
                 birthdate DATE,
-                role_id INT(11) DEFAULT 2, -- Default to Subscriber role
+                role_id INT(11) DEFAULT 2,
                 FOREIGN KEY (role_id) REFERENCES roles(id)
             );
 

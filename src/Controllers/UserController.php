@@ -12,28 +12,23 @@ class UserController
     {
         $this->userModel = new User(); // Initialize the User model
     }
+    
 
     // Handle User Registration
     public function register($data)
     {
-        // Validate input
-        if (empty($data['first_name']) || empty($data['last_name']) || empty($data['email']) || 
+        if (empty($data['first_name']) || empty($data['last_name']) || empty($data['email']) ||
             empty($data['username']) || empty($data['password']) || empty($data['birthdate'])) {
             return ['success' => false, 'message' => 'All fields are required.'];
         }
 
-        // Check if the email is already registered
         if ($this->userModel->getUserByEmail($data['email'])) {
             return ['success' => false, 'message' => 'This email is already registered.'];
         }
 
-        // Assign role (default to Subscriber)
-        $data['role'] = $data['role'] ?? 'Subscriber';
-
-        // Hash the password
+        $data['role'] = $data['role'] ?? 'Subscriber'; // Default to Subscriber
         $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
 
-        // Create the user
         if ($this->userModel->createUser($data)) {
             return ['success' => true, 'message' => 'User registered successfully.'];
         }

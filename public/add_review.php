@@ -7,6 +7,14 @@ use Controllers\ReviewController;
 // Initialize the ReviewController
 $reviewController = new ReviewController();
 
+session_start();
+
+// Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php'); // Redirect to login page
+    exit();
+}
+
 // Validate and fetch the spectacle ID from the URL
 if (isset($_GET['spectacle_id']) && is_numeric($_GET['spectacle_id'])) {
     $spectacleId = $_GET['spectacle_id'];

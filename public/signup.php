@@ -7,6 +7,11 @@ $authController = new UserController();
 $error = '';
 $success = '';
 
+if (isset($_SESSION['user_id'])) {
+    header('Location: home.php');
+    exit();
+}
+
 // Handle signup form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = [
