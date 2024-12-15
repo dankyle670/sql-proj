@@ -12,30 +12,63 @@ class ReservationController
 
     public function __construct()
     {
-        // Charger le modèle Reservation
-        $this->reservationModel = new Reservation();
+        $this->reservationModel = new Reservation(); // Load the Reservation model
     }
 
-    // Récupérer les places disponibles pour un spectacle et un horaire donné
-    public function getAvailableSeats($spectacleId, $scheduleId)
+    // Retrieve available seats for a given spectacle
+    public function getAvailableSeats($spectacleId)
     {
-        $seats = $this->reservationModel->getAvailableSeats($spectacleId, $scheduleId);
-        if ($seats) {
-            return ['success' => true, 'data' => $seats];
-        } else {
-            return ['success' => false, 'message' => 'Aucune place disponible trouvée.'];
+        try {
+            $seats = $this->reservationModel->getAvailableSeats($spectacleId);
+
+            if (isset($seats['error'])) {
+                return ['success' => false, 'message' => $seats['error']]; // Database error
+            }
+
+            if (!empty($seats)) {
+                return ['success' => true, 'data' => $seats]; // Seats available
+            }
+
+            return ['success' => false, 'message' => 'Aucune place disponible trouvée.']; // No seats available
+        } catch (\Exception $e) {
+            return ['success' => false, 'message' => 'Erreur : ' . $e->getMessage()]; // Handle unexpected errors
         }
     }
 
-    // Réserver une place pour un spectacle et un horaire donnés
-    public function reserveSeat($spectacleId, $scheduleId, $seatId)
-    {
-        $result = $this->reservationModel->reserveSeat($spectacleId, $scheduleId, $seatId);
+    // Reserve a seat for a given spectacle and schedule
+    public function reserveSeat($userId, $spectacleId, $scheduleId)
+{
+    try {
+        $result = $this->reservationModel->reserveSeat($userId, $spectacleId, $scheduleId);
+
+        if (is_array($result) && isset($result['error'])) {
+            return ['success' => false, 'message' => $result['error']]; // Handle database errors
+        }
+
         if ($result) {
-            return ['success' => true, 'message' => 'Réservation effectuée avec succès.'];
+            return ['success' => true, 'message' => 'Réservation effectuée avec succès.']; // Successful reservation
         } else {
-            return ['success' => false, 'message' => 'Erreur lors de la réservation ou la place est déjà réservée.'];
+            return ['success' => false, 'message' => 'Erreur : La place est déjà réservée ou invalide.']; // Reservation failed
         }
+    } catch (\Exception $e) {
+        return ['success' => false, 'message' => 'Erreur : ' . $e->getMessage()]; // Handle unexpected errors
     }
 }
-?>
+
+    public function getUserReservations($userId)
+    {
+        try {
+            $reservations = $this->reservationModel->getUserReservations($userId);
+            if (isset($reservations['error'])) {
+                return ['success' => false, 'message' => $reservations['error']]; // Database error
+            }
+            if (!empty($reservations)) {
+                return ['success' => true, 'data' => $reservations]; // Reservations found
+            }
+            return ['success' => false, 'message' => 'No reservations found.'];
+        } catch (\Exception $e) {
+            return ['success' => false, 'message' => 'Erreur : ' . $e->getMessage()];
+        }
+    }
+
+}

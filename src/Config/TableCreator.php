@@ -109,6 +109,7 @@ class TableCreator
                 booked TINYINT(3) UNSIGNED,
                 paid TINYINT(1),
                 amount FLOAT,
+                comment TEXT, -- New comment field added
                 spectacle_id INT(11),
                 subscriber_id INT(11),
                 reactions JSON,
